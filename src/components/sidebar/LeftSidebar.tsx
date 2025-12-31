@@ -4,7 +4,7 @@ import React, { useMemo, useState } from 'react';
 import {
     MessageSquare, Plus, Settings, Trash2, Library,
     Newspaper, Plug, Search, Edit2, Check, X,
-    TrendingUp, Sparkles
+    TrendingUp, Sparkles, type LucideIcon
 } from 'lucide-react';
 import { useApp } from '@/context/AppContext';
 import { useUser, UserButton } from "@stackframe/stack";
@@ -237,7 +237,7 @@ export default function LeftSidebar() {
     );
 }
 
-function NavItem({ icon: Icon, label, onClick, badge }: { icon: any, label: string, onClick: () => void, badge?: number }) {
+function NavItem({ icon: Icon, label, onClick, badge }: { icon: LucideIcon, label: string, onClick: () => void, badge?: number }) {
     return (
         <button
             onClick={onClick}
