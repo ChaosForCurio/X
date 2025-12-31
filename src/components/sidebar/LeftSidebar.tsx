@@ -6,14 +6,14 @@ import {
     Newspaper, Plug, Search, Edit2, Check, X,
     TrendingUp, Sparkles, type LucideIcon
 } from 'lucide-react';
-import { useApp } from '@/context/AppContext';
+import { useApp, type SavedChat } from '@/context/AppContext';
 import { useUser, UserButton } from "@stackframe/stack";
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
 // --- Utility: Date Grouping ---
-const groupChatsByDate = (chats: any[]) => {
-    const groups: { [key: string]: any[] } = {
+const groupChatsByDate = (chats: SavedChat[]) => {
+    const groups: { [key: string]: SavedChat[] } = {
         'Today': [],
         'Yesterday': [],
         'Previous 7 Days': [],
