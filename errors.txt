@@ -1,0 +1,27 @@
+﻿
+  build_error.log:3
+2:tion
+  build_error.log:3
+3:    + 
+FullyQualifi 
+> build_error.log:3
+4:   edErrorId : 
+Na  
+  build_error.log:3
+5:  tiveCommandErr 
+  
+  build_error.log:3
+6: or
+  build_error.log:6
+0:debar/LeftSidebar
+.t
+  build_error.log:6
+1:sx:219:41
+> build_error.log:6
+2:Type error: Type 
+  build_error.log:6
+3:'{ appearance: { 
+  build_error.log:6
+4:elements: { 
+
+

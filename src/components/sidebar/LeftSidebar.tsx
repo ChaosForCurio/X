@@ -216,7 +216,7 @@ export default function LeftSidebar() {
                 {user ? (
                     <div className="flex items-center gap-3 p-2 rounded-xl bg-white/5 border border-white/5 hover:border-white/10 hover:bg-white/10 transition-all cursor-pointer group">
                         <div className="relative w-9 h-9 rounded-lg overflow-hidden ring-1 ring-white/10">
-                            <UserButton appearance={{ elements: { avatarBox: "w-9 h-9" } }} />
+                            <UserButton />
                         </div>
                         <div className="flex-1 min-w-0">
                             <div className="text-sm font-semibold text-white truncate">{user.displayName || 'Creator'}</div>
