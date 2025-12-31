@@ -92,7 +92,7 @@ const StreamingAIResponse = React.memo(({ content, isNew, onSuggestionClick, onF
             <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
                 components={{
-                    p: ({ children }: any) => {
+                    p: ({ children }: { children?: React.ReactNode }) => {
                         // Handle bracketed citations like [1], [2]
                         const processCitations = (content: React.ReactNode): React.ReactNode => {
                             if (typeof content !== 'string') return content;
@@ -209,7 +209,7 @@ const StreamingAIResponse = React.memo(({ content, isNew, onSuggestionClick, onF
                             </motion.div>
                         );
                     },
-                    code: ({ inline, className, children, ...props }: any) => {
+                    code: ({ inline, className, children, ...props }: { inline?: boolean, className?: string, children?: React.ReactNode } & React.HTMLAttributes<HTMLElement>) => {
                         const match = /language-(\w+)/.exec(className || '');
                         const language = match ? match[1] : null;
 
@@ -265,7 +265,7 @@ const StreamingAIResponse = React.memo(({ content, isNew, onSuggestionClick, onF
                             </code>
                         );
                     },
-                    ul: ({ children }: any) => {
+                    ul: ({ children }: { children?: React.ReactNode }) => {
                         const items = React.Children.toArray(children);
                         const firstItem = items[0];
                         const isSourceList = items.length > 0 &&
@@ -287,12 +287,12 @@ const StreamingAIResponse = React.memo(({ content, isNew, onSuggestionClick, onF
                             </ul>
                         );
                     },
-                    ol: ({ children }: any) => (
+                    ol: ({ children }: { children?: React.ReactNode }) => (
                         <ol className="list-decimal list-outside ml-6 mb-4 space-y-2 text-gray-300 marker:text-purple-400">
                             {children}
                         </ol>
                     ),
-                    li: ({ children }: any) => {
+                    li: ({ children }: { children?: React.ReactNode }) => {
                         // Check if this is a source item (contains a link)
                         const childrenArray = React.Children.toArray(children);
                         const linkChild = childrenArray.find(child => React.isValidElement(child) && child.type === 'a') as React.ReactElement<{ href?: string; children?: React.ReactNode }> | undefined;
@@ -380,8 +380,8 @@ const StreamingAIResponse = React.memo(({ content, isNew, onSuggestionClick, onF
                             </li>
                         );
                     },
-                    h1: ({ children }: any) => <h1 className="text-3xl font-bold mb-6 mt-8 first:mt-0 text-white flex items-center gap-3 pb-4 border-b border-white/10"><span>🔍</span> {children}</h1>,
-                    h2: ({ children }: any) => {
+                    h1: ({ children }: { children?: React.ReactNode }) => <h1 className="text-3xl font-bold mb-6 mt-8 first:mt-0 text-white flex items-center gap-3 pb-4 border-b border-white/10"><span>🔍</span> {children}</h1>,
+                    h2: ({ children }: { children?: React.ReactNode }) => {
                         const content = Array.isArray(children) ? children.join('') : children?.toString() || '';
                         const lowerContent = content.toLowerCase();
                         const icon = lowerContent.includes('findings') ? '📌' :
@@ -390,19 +390,19 @@ const StreamingAIResponse = React.memo(({ content, isNew, onSuggestionClick, onF
                                     lowerContent.includes('insights') ? '🚀' : '🔹';
                         return <h2 className="text-xl font-semibold mb-4 mt-8 first:mt-0 text-blue-100 bg-white/5 p-3 rounded-lg border-l-4 border-blue-500 flex items-center gap-2 shadow-sm">{typeof children === 'string' && <span>{icon}</span>} {children}</h2>;
                     },
-                    h3: ({ children }: any) => <h3 className="text-lg font-semibold mb-3 mt-6 first:mt-0 text-purple-100 flex items-center gap-2"><span className="text-purple-400">•</span> {children}</h3>,
-                    table: ({ children }: any) => (
+                    h3: ({ children }: { children?: React.ReactNode }) => <h3 className="text-lg font-semibold mb-3 mt-6 first:mt-0 text-purple-100 flex items-center gap-2"><span className="text-purple-400">•</span> {children}</h3>,
+                    table: ({ children }: { children?: React.ReactNode }) => (
                         <div className="overflow-x-auto my-6 rounded-xl border border-white/10 shadow-lg bg-[#0d1117]">
                             <table className="min-w-full divide-y divide-white/10 text-sm">{children}</table>
                         </div>
                     ),
-                    thead: ({ children }: any) => <thead className="bg-white/10 text-white font-semibold">{children}</thead>,
-                    th: ({ children }: any) => <th className="px-6 py-4 text-left text-xs font-bold text-blue-200 uppercase tracking-wider border-b border-white/10">{children}</th>,
-                    td: ({ children }: any) => <td className="px-6 py-4 whitespace-nowrap text-gray-300 border-t border-white/5 hover:bg-white/5 transition-colors">{children}</td>,
-                    blockquote: ({ children }: any) => <blockquote className="border-l-4 border-purple-500/50 pl-6 italic my-6 text-gray-300 bg-gradient-to-r from-purple-500/10 to-transparent py-4 rounded-r-xl shadow-inner">{children}</blockquote>,
+                    thead: ({ children }: { children?: React.ReactNode }) => <thead className="bg-white/10 text-white font-semibold">{children}</thead>,
+                    th: ({ children }: { children?: React.ReactNode }) => <th className="px-6 py-4 text-left text-xs font-bold text-blue-200 uppercase tracking-wider border-b border-white/10">{children}</th>,
+                    td: ({ children }: { children?: React.ReactNode }) => <td className="px-6 py-4 whitespace-nowrap text-gray-300 border-t border-white/5 hover:bg-white/5 transition-colors">{children}</td>,
+                    blockquote: ({ children }: { children?: React.ReactNode }) => <blockquote className="border-l-4 border-purple-500/50 pl-6 italic my-6 text-gray-300 bg-gradient-to-r from-purple-500/10 to-transparent py-4 rounded-r-xl shadow-inner">{children}</blockquote>,
 
 
-                    a: ({ href, children }: any) => {
+                    a: ({ href, children }: { href?: string; children?: React.ReactNode }) => {
                         if (!href) return <span className="text-blue-400">{children}</span>;
 
                         let hostname = '';
