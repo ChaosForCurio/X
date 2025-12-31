@@ -1,7 +1,6 @@
-import axios from 'axios';
+import { performVideoSearch, extractYouTubeId } from './serper';
 
-const SERPER_API_KEY = process.env.NEXT_PUBLIC_SERPER_API_KEY;
-const SERPER_API_URL = 'https://google.serper.dev/videos';
+// Removed direct axios import and env var usage as we now delegate to serper.ts
 
 export interface Video {
     id: string;
@@ -20,50 +19,31 @@ export const fetchChannelVideos = async (
     channelIdOrHandle: string,
     count: number = 4,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _duration: 'any' | 'long' | 'medium' | 'short' = 'any', // Duration param is kept for signature compatibility but not used by Serper effectively
+    _duration: 'any' | 'long' | 'medium' | 'short' = 'any',
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     publishedAfter?: string
 ): Promise<Video[]> => {
     try {
-        const response = await axios.get(SERPER_API_URL, {
-            params: {
-                q: `${channelIdOrHandle} youtube`,
-                gl: 'us',
-                hl: 'en'
-            },
-            headers: {
-                'X-API-KEY': SERPER_API_KEY,
-                'Content-Type': 'application/json'
-            }
-        });
+        const query = `${channelIdOrHandle} youtube`;
+        const results = await performVideoSearch(query, count);
 
-        if (!response.data || !response.data.videos) {
-            return getMockVideos(channelIdOrHandle);
-        }
+        return results.map(item => {
+            const id = extractYouTubeId(item.link);
+            if (!id) return null;
 
-        return response.data.videos
-            .map((item: { link?: string; title: string; snippet?: string; imageUrl?: string; channel?: string; date: string }) => {
-                // Extract video ID from link (e.g. https://www.youtube.com/watch?v=VIDEO_ID)
-                const link = item.link || '';
-                const idMatch = link.match(/[?&]v=([^&]+)/);
-                const id = idMatch ? idMatch[1] : null;
-
-                if (!id) return null;
-
-                return {
-                    id: id,
-                    title: item.title,
-                    description: item.snippet || '',
-                    thumbnail: `https://i.ytimg.com/vi/${id}/hqdefault.jpg` || item.imageUrl,
-                    channelTitle: item.channel || 'Unknown Channel',
-                    publishedAt: parseRelativeDate(item.date),
-                };
-            })
-            .filter((v: Video | null) => v !== null)
-            .slice(0, count);
+            return {
+                id: id,
+                title: item.title,
+                description: item.snippet,
+                thumbnail: item.imageUrl,
+                channelTitle: item.channel,
+                publishedAt: item.date,
+            };
+        })
+            .filter((v): v is Video => v !== null);
 
     } catch (error: unknown) {
-        console.error('Error fetching videos from Serper:', (error as Error).message);
+        console.error('Error fetching videos via Serper wrapper:', (error as Error).message);
         return getMockVideos(channelIdOrHandle);
     }
 };

@@ -211,6 +211,24 @@ export async function fetchTrendingTopics(): Promise<TrendingTopic[]> {
  * Performs a video search using Serper.dev
  */
 export async function performVideoSearch(query: string, num: number = 6): Promise<VideoSearchResult[]> {
+    // Client-side execution: Proxy through our API to avoid exposing keys and CORS issues
+    if (typeof window !== 'undefined') {
+        try {
+            const response = await fetch('/api/search/videos', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ query, num }),
+            });
+
+            if (!response.ok) return [];
+            return await response.json();
+        } catch (error) {
+            console.error("[Serper] Client-side video search error:", error);
+            return [];
+        }
+    }
+
+    // Server-side execution
     const apiKey = getApiKey();
     if (!apiKey) return [];
 
