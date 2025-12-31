@@ -173,7 +173,7 @@ export default function ChatInput({
                                 <div className="flex items-center gap-2 p-2 px-3 bg-purple-500/10 border border-purple-500/20 rounded-xl group hover:bg-purple-500/20 transition-all duration-300">
                                     <div className="flex-1 min-w-0">
                                         <p className="text-[11px] text-purple-400 font-medium uppercase tracking-wider mb-0.5">AI Vision Suggestion</p>
-                                        <p className="text-xs text-white/70 line-clamp-1 italic">"{analysisPrompt}"</p>
+                                        <p className="text-xs text-white/70 line-clamp-1 italic">&quot;{analysisPrompt}&quot;</p>
                                     </div>
                                     <button
                                         onClick={() => { setInputPrompt(analysisPrompt); setAnalysisPrompt(''); }}

@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Play, Clock, Calendar, ExternalLink } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useVideoPlayer } from '@/context/VideoPlayerContext';
 
 export interface Video {
@@ -13,6 +13,8 @@ export interface Video {
     channel: string;
     duration: string;
     date: string;
+    imageUrl?: string;
+    image?: string;
 }
 
 interface VideoFeedProps {
@@ -77,7 +79,7 @@ export const VideoCard: React.FC<{ video: Video }> = ({ video }) => {
                 <div className="relative w-full h-full">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                        src={video.thumbnail || (video as any).imageUrl || (video as any).image || `https://img.youtube.com/vi/${video.id}/maxresdefault.jpg`}
+                        src={video.thumbnail || video.imageUrl || video.image || `https://img.youtube.com/vi/${video.id}/maxresdefault.jpg`}
                         alt={video.title}
                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                         onError={(e) => {

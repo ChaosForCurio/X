@@ -19,8 +19,8 @@ export default function SmartContextBar({
     let mode = '';
     let icon = null;
     let color = 'text-white/60';
-    let bgColor = 'bg-white/5';
-    let borderColor = 'border-white/10';
+    const bgColor = 'bg-white/5';
+    const borderColor = 'border-white/10';
 
     if (isCodeCanvasOpen) {
         mode = 'Coding Workbench';

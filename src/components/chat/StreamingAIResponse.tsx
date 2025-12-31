@@ -113,13 +113,13 @@ const StreamingAIResponse = React.memo(({ content, isNew, onSuggestionClick, onF
 
                         const processedChildren = React.Children.map(children, processCitations);
 
-                        const extractRawText = (node: any): string => {
+                        const extractRawText = (node: React.ReactNode): string => {
                             if (!node) return '';
                             if (typeof node === 'string') return node;
                             if (typeof node === 'number') return String(node);
                             if (Array.isArray(node)) return node.map(extractRawText).join('');
                             if (React.isValidElement(node)) {
-                                return extractRawText((node.props as any).children);
+                                return extractRawText((node.props as { children?: React.ReactNode }).children);
                             }
                             return '';
                         };

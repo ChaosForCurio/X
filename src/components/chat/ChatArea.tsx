@@ -1,7 +1,7 @@
 'use client';
-/* eslint-disable @next/next/no-img-element */
+ 
 
-import { Plus, Download, Maximize, Minimize, SquarePen, Trash2 } from 'lucide-react';
+import { Plus, Download, Maximize, Minimize, SquarePen, Trash2, type LucideIcon } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Toggle3D from '../ui/Toggle3D';
 import dynamic from 'next/dynamic';
@@ -315,7 +315,7 @@ export default function ChatArea() {
     );
 }
 
-function ActionButton({ icon: Icon, onClick, label, shortcut }: { icon: any, onClick: () => void, label: string, shortcut?: string }) {
+function ActionButton({ icon: Icon, onClick, label, shortcut }: { icon: LucideIcon, onClick: () => void, label: string, shortcut?: string }) {
     return (
         <button
             onClick={onClick}

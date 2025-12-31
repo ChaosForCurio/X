@@ -36,6 +36,31 @@ export interface VideoSearchResult {
     date: string;
 }
 
+interface SerperApiVideo {
+    title: string;
+    link: string;
+    snippet?: string;
+    imageUrl?: string;
+    thumbnailUrl?: string;
+    duration?: string;
+    source?: string;
+    channel?: string;
+    date?: string;
+}
+
+interface SerperOrganicResult {
+    title: string;
+    link: string;
+    snippet: string;
+    source?: string;
+    date?: string;
+    imageUrl?: string;
+    thumbnailUrl?: string;
+    richSnippet?: {
+        cse_image?: { src: string }[];
+    };
+}
+
 const getApiKey = () => {
     const key = process.env.SERPER_API_KEY || process.env.NEXT_PUBLIC_SERPER_API_KEY;
     if (!key) {
@@ -70,14 +95,14 @@ export async function performWebSearch(query: string, num: number = 5): Promise<
         const data = await response.json();
 
 
-        const results: WebSearchResult[] = (data.organic || []).map((result: any, index: number) => ({
+        const results: WebSearchResult[] = (data.organic || []).map((result: SerperOrganicResult, index: number) => ({
             title: result.title,
             link: result.link,
             snippet: result.snippet,
             position: index + 1,
             source: result.source,
             date: result.date,
-            imageUrl: result.imageUrl || result.thumbnailUrl || (result.richSnippet?.cse_image?.length > 0 ? result.richSnippet.cse_image[0].src : undefined),
+            imageUrl: result.imageUrl || result.thumbnailUrl || result.richSnippet?.cse_image?.[0]?.src,
             type: 'organic'
         }));
 
@@ -250,7 +275,7 @@ export async function performVideoSearch(query: string, num: number = 6): Promis
 
         }
 
-        return (data.videos || []).map((v: any) => {
+        return (data.videos || []).map((v: SerperApiVideo) => {
             const ytId = extractYouTubeId(v.link);
             return {
                 title: v.title,
