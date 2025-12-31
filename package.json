@@ -35,7 +35,7 @@
     "highlight.js": "^11.11.1",
     "lucide-react": "^0.554.0",
     "monaco-editor": "^0.55.1",
-    "next": "16.0.5",
+    "next": "16.0.10",
     "pdfjs-dist": "^5.4.530",
     "react": "19.2.0",
     "react-dom": "19.2.0",
