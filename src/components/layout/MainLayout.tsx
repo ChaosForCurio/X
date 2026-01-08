@@ -2,12 +2,12 @@
 
 import React, { Suspense } from 'react';
 import dynamic from 'next/dynamic';
+import { usePathname } from 'next/navigation';
 import LeftSidebar from '../sidebar/LeftSidebar';
 import RightSidebar from '../sidebar/RightSidebar';
 import UploadModal from '../ui/UploadModal';
 import { useApp } from '@/context/AppContext';
 import { AnimatePresence, motion } from 'framer-motion';
-// import { useMCPOAuthCallback } from '@/hooks/useMCPOAuth'; // Removed unused hook
 
 // Dynamic import for ConnectorsModal to avoid SSR issues
 const ConnectorsModal = dynamic(() => import('../ui/ConnectorsModal'), { ssr: false });
@@ -16,7 +16,6 @@ interface MainLayoutProps {
     children: React.ReactNode;
 }
 
-import { usePathname } from 'next/navigation';
 
 export default function MainLayout({ children }: MainLayoutProps) {
     const {
@@ -33,12 +32,6 @@ export default function MainLayout({ children }: MainLayoutProps) {
     const pathname = usePathname();
     const isSignInPage = pathname?.includes('/sign-in');
 
-    // Handle MCP OAuth callbacks - Removed as MCP features are being cleaned up
-    /*
-    useMCPOAuthCallback((connectorId) => {
-        connectApp(connectorId);
-    });
-    */
 
     return (
         <div className="relative flex h-screen w-full bg-[#0a0a0a] text-white overflow-hidden font-sans selection:bg-purple-500/30">
@@ -64,7 +57,9 @@ export default function MainLayout({ children }: MainLayoutProps) {
                 id="main-content"
                 className="flex-1 flex flex-col relative min-w-0 z-10 bg-gradient-to-b from-black/50 to-black/20 transition-all duration-300 w-full overflow-y-auto h-full scrollbar-hide"
             >
-                {children}
+                <div id="main-scroll-content" className="min-h-full w-full">
+                    {children}
+                </div>
             </main>
 
             {/* Right Sidebar - Social/Images */}

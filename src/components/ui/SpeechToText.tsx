@@ -40,6 +40,7 @@ declare global {
     interface Window {
         SpeechRecognition: new () => SpeechRecognition;
         webkitSpeechRecognition: new () => SpeechRecognition;
+        webkitAudioContext: typeof AudioContext;
     }
 }
 
@@ -100,7 +101,7 @@ export default function SpeechToText({ onTranscript, disabled = false, continuou
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 
             // Initialize Audio Context for Visualizer
-            const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
             const analyser = audioContext.createAnalyser();
             const source = audioContext.createMediaStreamSource(stream);
 
@@ -227,7 +228,7 @@ export default function SpeechToText({ onTranscript, disabled = false, continuou
             toast.error('Failed to start speech recognition');
             setIsRecording(false);
         }
-    }, [continuous, isSupported]);
+    }, [continuous]);
 
     const stopRecording = useCallback(() => {
         if (recognitionRef.current) {

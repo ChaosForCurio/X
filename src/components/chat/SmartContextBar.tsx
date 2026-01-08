@@ -67,6 +67,6 @@ export default function SmartContextBar({
 }
 
 // Helper to render icon component dynamically
-function IconWrapper({ icon: Icon, className }: { icon: any, className: string }) {
+function IconWrapper({ icon: Icon, className }: { icon: React.ElementType, className: string }) {
     return <Icon className={className} />;
 }

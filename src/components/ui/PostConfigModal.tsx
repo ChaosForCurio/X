@@ -155,7 +155,7 @@ export default function PostConfigModal({ isOpen, onClose, onGenerate }: PostCon
                                             return (
                                                 <button
                                                     key={goal.id}
-                                                    onClick={() => setConfig({ ...config, goal: goal.id as any })}
+                                                    onClick={() => setConfig({ ...config, goal: goal.id as PostConfig['goal'] })}
                                                     className={`w-full p-4 rounded-2xl border flex items-center gap-4 transition-all text-left group
                                                         ${config.goal === goal.id
                                                             ? 'bg-indigo-500/10 border-indigo-500/40 shadow-xl'
@@ -295,7 +295,7 @@ export default function PostConfigModal({ isOpen, onClose, onGenerate }: PostCon
                                             return (
                                                 <button
                                                     key={m.id}
-                                                    onClick={() => setConfig({ ...config, mediaType: m.id as any })}
+                                                    onClick={() => setConfig({ ...config, mediaType: m.id as PostConfig['mediaType'] })}
                                                     className={`p-4 rounded-2xl border flex flex-col items-center gap-3 transition-all text-center
                                                         ${config.mediaType === m.id
                                                             ? 'bg-indigo-500/10 border-indigo-500/40 shadow-xl'

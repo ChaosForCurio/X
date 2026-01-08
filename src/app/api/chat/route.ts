@@ -4,20 +4,20 @@ import { AIContent } from '@/lib/ai/types';
 import { stackServerApp } from '@/stack';
 import { saveMemory, forgetMemory } from '@/lib/memory';
 import { saveMessage, getChatHistory, getSummary, isRateLimited, ensureChat } from '@/lib/db-actions';
-import { performWebSearch, performShoppingSearch, performVideoSearch } from '@/lib/serper';
-import {
-    formatSearchResultsForAI,
-    formatSearchResultsForUser,
-    formatShoppingResultsForUser,
-    formatVideoResultsForUser,
-    getSearchSystemInstructions
-} from '@/lib/search-formatter';
+import { performShoppingSearch } from '@/lib/serper';
+import { formatShoppingResultsForUser } from '@/lib/search-formatter';
 import { cleanAIResponse } from '@/lib/json-cleaner';
-import { detectShoppingIntent } from '@/lib/shoppingAgentTrigger';
 import { detectIntent } from '@/lib/intentDetector';
 import { handleWebSearch } from '@/lib/search-handler';
 
 export async function POST(request: Request) {
+    let rawResponse = "";
+    let userId: string | null = null;
+    let currentChatId = 'default-chat';
+    let clientHistory: AIContent[] = [];
+    let finalPrompt = "";
+    let image: string | undefined;
+
     try {
         let user;
         try {
@@ -26,13 +26,15 @@ export async function POST(request: Request) {
             console.error("Stack Auth Error:", authError);
             user = null;
         }
-        const userId = user?.id || null; // Use null for anonymous instead of 'anonymous' string to avoid FK/constraint issues if any
+        userId = user?.id || null;
 
-        const { prompt, image, messages, chatId, imageContext } = await request.json();
+        const body = await request.json();
+        const { prompt, messages, chatId, imageContext } = body;
+        image = body.image;
 
-        const currentChatId = chatId || 'default-chat';
+        currentChatId = chatId || 'default-chat';
 
-        const clientHistory: AIContent[] = messages ? messages.slice(-20).map((msg: { role: string; content: string }) => ({
+        clientHistory = messages ? messages.slice(-50).map((msg: { role: string; content: string }) => ({
             role: msg.role === 'user' ? 'user' : 'model',
             parts: [{ text: msg.content }]
         })) : [];
@@ -41,8 +43,7 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'Prompt or image is required' }, { status: 400 });
         }
 
-        // Construct the full prompt with context
-        let finalPrompt = prompt;
+        finalPrompt = prompt;
 
         // Inject Image Context if available
         if (imageContext) {
@@ -81,46 +82,32 @@ DO NOT say you cannot generate images. You CAN. Just output the JSON.
         await ensureChat(currentChatId, userId, 'New Conversation');
 
         // 2. Save User Message
-        // Construct full content if image is present for DB storage
-        let dbContent = prompt;
+        let dbContent = prompt || (image ? "[Image Uploaded]" : "");
         if (image) {
-            // If it's a PDF, we might want to note that
             if (image.startsWith('data:application/pdf')) {
-                dbContent = `[PDF Attachment] \n${prompt} `;
+                dbContent = `[PDF Attachment] \n${prompt || ""} `;
             } else {
-                // We don't save the full base64 to DB to avoid bloat, just a marker.
-                // The frontend persists the image in localStorage.
-                // The AI receives the image directly in the API call.
-                dbContent = `[Image Uploaded] \n${prompt} `;
+                dbContent = `[Image Uploaded] \n${prompt || ""} `;
             }
         }
         await saveMessage(userId, currentChatId, 'user', dbContent);
 
-        // Manual Web Search Logic - Support @web prefix
+        // Manual Web Search Logic - Check for @web prefix
         if (prompt && /@web/i.test(prompt)) {
             const searchQuery = prompt.replace(/@web/i, '').trim() || prompt.trim();
-
             if (searchQuery) {
-                try {
-                    const { response } = await handleWebSearch(searchQuery, userId, currentChatId, clientHistory);
-                    return NextResponse.json({ response });
-                } catch (searchError) {
-                    console.error("Manual Search Error:", searchError);
-                }
+                const { response } = await handleWebSearch(searchQuery, userId, currentChatId, clientHistory);
+                return NextResponse.json({ response });
             }
         }
 
-        // 3. Retrieve Context (Facts + Summary + History)
+        // 3. Retrieve Context
         let context = "";
-
-        // --- INTENT DETECTION ---
-        const detectedIntent = detectIntent(prompt);
+        const detectedIntent = detectIntent(prompt || "");
 
         if (detectedIntent.type === 'Shopping') {
-            // Perform Shopping Search automatically
             let shoppingData = "";
             try {
-                // If it's a product recommendation or category search, we fetch real data
                 if (['ProductRecommendation', 'CategorySearch', 'BestDeals', 'OnlineStoreIntent'].includes(detectedIntent.subType || '')) {
                     const results = await performShoppingSearch(prompt);
                     shoppingData = formatShoppingResultsForUser(prompt, results);
@@ -188,35 +175,22 @@ Your goal is to provide comprehensive, fact - based, and well - structured resea
 4. ** Premium Structure:** Use H1, H2, and H3 headers for long - form analysis.
 `;
         }
-        // ------------------------------
-
 
         // Video Generation Logic
         if (prompt && prompt.trim().toLowerCase().startsWith('@video')) {
             const videoPrompt = prompt.replace(/@video/i, '').trim();
-
             if (videoPrompt) {
-                // We return a special JSON response to tell the frontend to trigger the video generation
-                // or we can handle it here if we want the AI to "say" something about it.
-                // However, the current architecture seems to rely on the AI returning a JSON action for images.
-                // Let's replicate that pattern for videos.
-
-                // We'll inject a system note to force the AI to generate the video action JSON.
                 context += `SYSTEM INSTRUCTION: The user wants to generate a video with the prompt: "${videoPrompt}".\n`;
                 context += `You MUST return a JSON response with the action "generate_video" and the prompt "${videoPrompt}".\n`;
                 context += `Do not output plain text.Output ONLY the JSON object.\n`;
                 context += `Example: { "action": "generate_video", "freepik_prompt": "${videoPrompt}" } \n`;
-
                 finalPrompt = `Generate a video for: ${videoPrompt} `;
             } else {
                 context += "SYSTEM NOTE: The user typed @video but provided no prompt. Ask them what video they want to generate.\n\n";
             }
         }
 
-        // B. Conversation Summary (New System) & C. Recent History (New System - from DB)
-        // We fetch from DB to ensure consistency, but we can also use the client's messages if needed.
-        // Using DB is safer for "Memory" features.
-        const [summary, dbHistory] = await Promise.all([
+        const [summary] = await Promise.all([
             getSummary(currentChatId),
             getChatHistory(userId, currentChatId, 10)
         ]);
@@ -225,20 +199,6 @@ Your goal is to provide comprehensive, fact - based, and well - structured resea
             context += `PREVIOUS CONVERSATION SUMMARY: \n${summary} \n\n`;
         }
 
-        // Format history for Gemini
-        // We need to map DB roles to Gemini roles
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const history: AIContent[] = dbHistory.map(msg => ({
-            role: msg.role === 'ai' ? 'model' : 'user',
-            parts: [{ text: msg.content }]
-        }));
-
-        // Client history is now defined at the top
-
-
-        // 4. Get AI Response
-        // Inject Smart Search & Suggestions Instructions
-        // D. Smart Tool Activation Logic
         context += `
             [SYSTEM INSTRUCTION: SMART TOOLS]
 Trigger actions ONLY when the user's request explicitly matches the capability.
@@ -254,44 +214,21 @@ Trigger actions ONLY when the user's request explicitly matches the capability.
             5. Provide a list of '### Suggestions' at the end of your final text response.Format each suggestion exactly as: "- [SUGGESTION] Suggestion Text"
 `;
 
-        let rawResponse = "";
+        // 4. Get AI Response
         try {
             rawResponse = await aiService.generateText(finalPrompt, {
                 provider: 'groq',
                 history: clientHistory,
                 context
             });
-        } catch (error: unknown) {
-            console.error("Groq API Error:", error);
-
-            try {
-                rawResponse = await aiService.generateText(finalPrompt, {
-                    provider: 'gemini',
-                    history: clientHistory,
-                    context,
-                    image
-                });
-            } catch (geminiError) {
-                console.error("Gemini Fallback Error:", geminiError);
-
-                // Check for rate limiting or overload specifically (from original error)
-                const errorMessage = error instanceof Error ? error.message : String(error);
-                const errorStatus = (error as { status?: number })?.status;
-
-                if (errorMessage.includes('429') || errorStatus === 429) {
-                    return NextResponse.json({
-                        response: "I'm currently overloaded with requests. Please wait a moment before trying again."
-                    });
-                }
-
-                // Handle all other errors gracefully
-                const primaryErrorMessage = error instanceof Error ? error.message : String(error);
-                const backupErrorMessage = geminiError instanceof Error ? geminiError.message : String(geminiError);
-
-                return NextResponse.json({
-                    response: `I encountered an internal error.Primary AI Error: ${primaryErrorMessage}. Backup AI Error: ${backupErrorMessage} `
-                });
-            }
+        } catch (error) {
+            console.error("Groq Power failure, falling back to Gemini:", error);
+            rawResponse = await aiService.generateText(finalPrompt, {
+                provider: 'gemini',
+                history: clientHistory,
+                context,
+                image
+            });
         }
 
         // 5. Unified Response Parsing & Action Extraction
@@ -321,22 +258,18 @@ Trigger actions ONLY when the user's request explicitly matches the capability.
 
         // Handle Actions if extracted
         if (parsedAction) {
-            // A. Web Search Action
             if (parsedAction.action === 'web_search' && parsedAction.search_query) {
                 try {
                     const { response } = await handleWebSearch(parsedAction.search_query, userId, currentChatId, clientHistory);
                     return NextResponse.json({ response });
                 } catch (e) {
                     console.error("Auto search handler failed", e);
-                    // Fallback?
                 }
             }
 
-            // B. Image Generation Action
             if (parsedAction.backend && parsedAction.backend.action === 'generate_image') {
                 const explanation = parsedAction.explanation || finalResponse || "Generating image...";
                 await saveMessage(userId, currentChatId, 'ai', explanation);
-
                 return NextResponse.json({
                     response: explanation,
                     backend: parsedAction.backend,
@@ -345,11 +278,9 @@ Trigger actions ONLY when the user's request explicitly matches the capability.
                 });
             }
 
-            // C. Legacy Image Gen Action
             if (parsedAction.action === 'generate_image' && parsedAction.freepik_prompt) {
                 const explanation = finalResponse || `Generating image for: "${parsedAction.freepik_prompt}"...`;
                 await saveMessage(userId, currentChatId, 'ai', explanation);
-
                 return NextResponse.json({
                     response: explanation,
                     action: 'generate_image',
@@ -357,11 +288,9 @@ Trigger actions ONLY when the user's request explicitly matches the capability.
                 });
             }
 
-            // D. Video Generation Action
             if (parsedAction.action === 'generate_video' && parsedAction.freepik_prompt) {
                 const explanation = finalResponse || `Generating video for: "${parsedAction.freepik_prompt}"...`;
                 await saveMessage(userId, currentChatId, 'ai', explanation);
-
                 return NextResponse.json({
                     response: explanation,
                     action: 'generate_video',
@@ -369,11 +298,9 @@ Trigger actions ONLY when the user's request explicitly matches the capability.
                 });
             }
 
-            // E. Suggest Prompt Action
             if (parsedAction.action === 'suggest_prompt' && parsedAction.promptId) {
                 const explanation = finalResponse || `Recommended Template: ** ${parsedAction.title || parsedAction.promptId}** `;
                 await saveMessage(userId, currentChatId, 'ai', explanation);
-
                 return NextResponse.json({
                     response: explanation,
                     action: 'suggest_prompt',
@@ -383,7 +310,6 @@ Trigger actions ONLY when the user's request explicitly matches the capability.
                 });
             }
 
-            // F. Auto-Memory Extraction (without breaking response)
             if (parsedAction.auto_memory && userId) {
                 try {
                     const { store, forget, reason } = parsedAction.auto_memory;
@@ -401,14 +327,12 @@ Trigger actions ONLY when the user's request explicitly matches the capability.
 
         // 6. Save AI Response (Normal Text)
         await saveMessage(userId, currentChatId, 'ai', finalResponse);
-
         return NextResponse.json({ response: finalResponse });
+
     } catch (error) {
         console.error('[Chat API] Fatal Error:', error);
-
         const isProd = process.env.NODE_ENV === 'production';
         const message = error instanceof Error ? error.message : 'An unexpected error occurred';
-
         return NextResponse.json({
             error: 'Internal Server Error',
             response: `I encountered an issue: ${message}. Please try again later.`,

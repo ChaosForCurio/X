@@ -62,12 +62,22 @@ interface SerperOrganicResult {
 }
 
 const getApiKey = () => {
+    // SECURITY: Never expose API keys to the client via NEXT_PUBLIC_ variables.
+    // This check ensures we don't inadvertently leak tokens.
+    if (typeof window !== 'undefined') {
+        console.error("[Serper] Security Error: Attempted to access API key on the client side.");
+        return undefined;
+    }
+
+    // Try primary key first, then fallback to public key (though the latter is discouraged for security)
     const key = process.env.SERPER_API_KEY || process.env.NEXT_PUBLIC_SERPER_API_KEY;
+
     if (!key) {
-        console.warn("[Serper] API key missing (tried SERPER_API_KEY and NEXT_PUBLIC_SERPER_API_KEY)");
+        console.warn("[Serper] API key missing (checked SERPER_API_KEY and NEXT_PUBLIC_SERPER_API_KEY)");
     }
     return key;
 };
+
 
 /**
  * Performs a web search using Serper.dev

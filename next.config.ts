@@ -49,15 +49,11 @@ const nextConfig: NextConfig = {
       // Shopping image domains
       {
         protocol: 'https',
-        hostname: '*.googleusercontent.com',
-      },
-      {
-        protocol: 'https',
         hostname: 'm.media-amazon.com',
       },
       {
         protocol: 'https',
-        hostname: 'images-na.ssl-images-amazon.com',
+        hostname: '*.ssl-images-amazon.com',
       },
       {
         protocol: 'https',
@@ -93,22 +89,6 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'rukminim1.flixcart.com',
-      },
-      {
-        protocol: 'https',
-        hostname: 'rukminim2.flixcart.com',
-      },
-      {
-        protocol: 'https',
-        hostname: 'assets.myntassets.com',
-      },
-      {
-        protocol: 'https',
-        hostname: 'i5.walmartimages.com',
-      },
-      {
-        protocol: 'https',
         hostname: '*.walmartimages.com',
       },
       {
@@ -119,18 +99,9 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'shopping-phinf.pstatic.net',
       },
-      // Additional shopping domains
       {
         protocol: 'https',
         hostname: '*.gstatic.com',
-      },
-      {
-        protocol: 'https',
-        hostname: 'lh3.googleusercontent.com',
-      },
-      {
-        protocol: 'https',
-        hostname: '*.ssl-images-amazon.com',
       },
       {
         protocol: 'https',
@@ -154,10 +125,6 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'i.ebayimg.com',
-      },
-      {
-        protocol: 'https',
         hostname: '*.apple.com',
       },
       {
@@ -167,10 +134,6 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: '*.samsung.com',
-      },
-      {
-        protocol: 'https',
-        hostname: 'images.samsung.com',
       },
       {
         protocol: 'https',

@@ -17,11 +17,7 @@ export const fetchNewsVideos = async (category: string): Promise<Video[]> => {
 
 export const fetchChannelVideos = async (
     channelIdOrHandle: string,
-    count: number = 4,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    _duration: 'any' | 'long' | 'medium' | 'short' = 'any',
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    publishedAfter?: string
+    count: number = 4
 ): Promise<Video[]> => {
     try {
         const query = `${channelIdOrHandle} youtube`;
@@ -46,34 +42,6 @@ export const fetchChannelVideos = async (
         console.error('Error fetching videos via Serper wrapper:', (error as Error).message);
         return getMockVideos(channelIdOrHandle);
     }
-};
-
-// Helper to parse "2 hours ago", "5 mins ago", "1 day ago" to ISO string
-const parseRelativeDate = (dateStr: string): string => {
-    if (!dateStr) return new Date().toISOString();
-
-    const now = new Date();
-    const str = dateStr.toLowerCase();
-
-    // Basic parsing logic
-    if (str.includes('min')) {
-        const mins = parseInt(str) || 0;
-        now.setMinutes(now.getMinutes() - mins);
-    } else if (str.includes('hour')) {
-        const hours = parseInt(str) || 0;
-        now.setHours(now.getHours() - hours);
-    } else if (str.includes('day')) {
-        const days = parseInt(str) || 0;
-        now.setDate(now.getDate() - days);
-    } else if (str.includes('week')) {
-        const weeks = parseInt(str) || 0;
-        now.setDate(now.getDate() - (weeks * 7));
-    } else if (str.includes('month')) {
-        const months = parseInt(str) || 0;
-        now.setMonth(now.getMonth() - months);
-    }
-
-    return now.toISOString();
 };
 
 const getMockVideos = (category: string): Video[] => {

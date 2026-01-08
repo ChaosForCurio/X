@@ -3,6 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { fetchChannelVideos, Video } from '@/lib/youtube';
+import { useSmoothScroll, smoothScrollTo } from '@/hooks/useSmoothScroll';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Play, Calendar, User, ArrowLeft, RefreshCw } from 'lucide-react';
 import Image from 'next/image';
 import NewsSkeleton from '@/components/ui/NewsSkeleton';
@@ -45,10 +47,33 @@ export default function NewsPage() {
     const [refreshing, setRefreshing] = useState(false);
     const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
     const mainPlayerRef = React.useRef<HTMLDivElement>(null);
+    // Scroll button visibility state (mirrors chat panel behavior)
+    const [showScrollButton, setShowScrollButton] = useState(false);
+    const [visibleCounts, setVisibleCounts] = useState<{ [key: string]: number }>({});
 
-    const loadAllVideos = async (isRefresh = false) => {
-        if (isRefresh) setRefreshing(true);
-        else setLoading(true);
+    // Listen to global main-content scroll
+    useEffect(() => {
+        const container = document.getElementById('main-content');
+        if (!container) return;
+
+        const handleScroll = () => {
+            const { scrollTop, scrollHeight, clientHeight } = container;
+            const isAtBottom = scrollTop + clientHeight >= scrollHeight - 200;
+            setShowScrollButton(!isAtBottom);
+        };
+
+        container.addEventListener('scroll', handleScroll);
+        handleScroll();
+        return () => container.removeEventListener('scroll', handleScroll);
+    }, []);
+
+    const loadAllVideos = useCallback(async (isRefresh = false) => {
+        if (isRefresh) {
+            setRefreshing(true);
+        } else {
+            // Initial load is already true, no need to set it again to avoid effect warning
+            // setLoading(true); 
+        }
 
         const newSectionVideos: { [key: string]: Video[] } = {};
         let firstVideoFound: Video | null = null;
@@ -64,29 +89,16 @@ export default function NewsPage() {
 
         for (const section of SECTIONS) {
             let videos: Video[] = [];
-            // Calculate start of today for filtering
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            const publishedAfter = today.toISOString();
-
             for (const channel of section.channels) {
-                // Fetch more videos (8) than needed (4) to allow for randomization on refresh
-                const fetchCount = 8;
-
-                // Fetch videos published today first
-                let channelVideos = await fetchChannelVideos(channel.name, fetchCount, 'any', publishedAfter);
-
-                // Fallback: If no videos today, fetch latest videos
-                if (channelVideos.length === 0) {
-                    channelVideos = await fetchChannelVideos(channel.name, fetchCount, 'any');
-                }
-
+                // Fetch more videos (16) to allow for 'Load More' and randomization
+                const fetchCount = 16;
+                const channelVideos = await fetchChannelVideos(channel.name, fetchCount);
                 videos = [...videos, ...channelVideos];
             }
 
-            // Shuffle and take the top 4 to show different videos on refresh
+            // Shuffle and store ALL videos, we will slice in the UI
             const shuffledVideos = shuffleArray(videos);
-            newSectionVideos[section.title] = shuffledVideos.slice(0, 4);
+            newSectionVideos[section.title] = shuffledVideos;
 
             if (!firstVideoFound && shuffledVideos.length > 0) {
                 firstVideoFound = shuffledVideos[0];
@@ -95,6 +107,13 @@ export default function NewsPage() {
 
         setSectionVideos(newSectionVideos);
 
+        // Initialize visible counts if not set
+        const initialCounts: { [key: string]: number } = {};
+        SECTIONS.forEach(s => {
+            initialCounts[s.title] = 4;
+        });
+        setVisibleCounts(initialCounts);
+
         // Only set selected video if it's the initial load or if we want to reset it on refresh
         if (firstVideoFound && !isRefresh) {
             setSelectedVideo(firstVideoFound);
@@ -102,26 +121,45 @@ export default function NewsPage() {
 
         setLoading(false);
         setRefreshing(false);
-    };
+    }, []);
 
     useEffect(() => {
         loadAllVideos();
-    }, []);
+    }, [loadAllVideos]);
 
     const handleRefresh = () => {
         loadAllVideos(true);
     };
 
+    const handleLoadMore = (sectionTitle: string) => {
+        setVisibleCounts(prev => ({
+            ...prev,
+            [sectionTitle]: (prev[sectionTitle] || 4) + 4
+        }));
+    };
+
+    const scrollToSection = (id: string) => {
+        const element = document.getElementById(id);
+        const container = document.getElementById('main-content');
+        if (element && container) {
+            smoothScrollTo(container, element, { duration: 1, offset: -80 });
+        }
+    };
+
     const handleVideoSelect = (video: Video) => {
         setSelectedVideo(video);
-        mainPlayerRef.current?.scrollIntoView({ behavior: 'smooth' });
+        const container = document.getElementById('main-content');
+        if (container && mainPlayerRef.current) {
+            smoothScrollTo(container, mainPlayerRef.current, { duration: 0.8, offset: -100 });
+        }
     };
 
     return (
-        <div className="flex flex-col bg-black text-white min-h-full">
+        <div className="flex flex-col bg-black text-white min-h-screen">
             {/* Header */}
             <div className="p-6 shrink-0 relative sticky top-0 z-20 bg-black/80 backdrop-blur-xl border-b border-white/5">
                 <div className="absolute inset-0 bg-gradient-to-b from-purple-500/10 to-transparent pointer-events-none" />
+
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
                         <button
@@ -151,7 +189,52 @@ export default function NewsPage() {
                         </span>
                     </button>
                 </div>
+
+                <div className="mt-8 flex gap-3 overflow-x-auto pb-2 scrollbar-hide no-scrollbar -mx-2 px-2 mask-fade-right">
+                    {SECTIONS.map((section) => (
+                        <button
+                            key={section.title}
+                            onClick={() => scrollToSection(`section-${section.title}`)}
+                            className="px-5 py-2.5 rounded-full bg-white/5 border border-white/10 hover:bg-white/15 hover:border-white/20 text-sm font-medium whitespace-nowrap transition-all hover:scale-105 active:scale-95 text-gray-300 hover:text-white"
+                        >
+                            {section.title}
+                        </button>
+                    ))}
+                    <button
+                        onClick={() => {
+                            const container = document.getElementById('main-content');
+                            if (container) smoothScrollTo(container, 'top', { duration: 1.2 });
+                        }}
+                        className="px-5 py-2.5 rounded-full bg-purple-500/10 border border-purple-500/20 hover:bg-purple-500/20 text-sm font-medium text-purple-300 whitespace-nowrap transition-all"
+                    >
+                        Back to Top
+                    </button>
+                </div>
+
+                {/* Scroll-to-bottom button – appears when not at bottom */}
+                <AnimatePresence>
+                    {showScrollButton && (
+                        <motion.button
+                            initial={{ opacity: 0, scale: 0.8, y: 10 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.8, y: 10 }}
+                            onClick={() => {
+                                const container = document.getElementById('main-content');
+                                if (container) {
+                                    smoothScrollTo(container, 'max', { duration: 1.2 });
+                                }
+                            }}
+                            className="fixed bottom-24 sm:bottom-28 md:bottom-32 right-4 sm:right-6 md:right-8 p-2.5 sm:p-3 bg-white/10 backdrop-blur border border-white/10 text-white rounded-full shadow-lg z-50 hover:bg-white/20 transition-all hover:scale-110 active:scale-95"
+                            aria-label="Scroll to bottom"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 sm:w-5 sm:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </motion.button>
+                    )}
+                </AnimatePresence>
             </div>
+
 
             {/* Content Area */}
             <div className="flex-1">
@@ -205,9 +288,10 @@ export default function NewsPage() {
 
                         {/* Video Lists */}
                         {SECTIONS.map((section, idx) => (
-                            <div key={section.title} className="relative">
+                            <div key={section.title} id={`section-${section.title}`} className="relative scroll-mt-32">
                                 {/* Section Header */}
                                 <div className="flex items-center gap-4 mb-6">
+
                                     <div className="h-8 w-1 bg-gradient-to-b from-blue-500 to-purple-500 rounded-full" />
                                     <h2 className="text-2xl font-bold text-white tracking-wide">
                                         {section.title}
@@ -215,7 +299,7 @@ export default function NewsPage() {
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                                    {sectionVideos[section.title]?.map((video, index) => (
+                                    {sectionVideos[section.title]?.slice(0, visibleCounts[section.title] || 4).map((video, index) => (
                                         <div
                                             key={`${video.id}-${index}`}
                                             className={`group relative bg-white/5 border rounded-2xl overflow-hidden transition-all duration-300 cursor-pointer hover:-translate-y-1 hover:shadow-2xl hover:shadow-purple-500/20 ${selectedVideo?.id === video.id
@@ -271,6 +355,19 @@ export default function NewsPage() {
                                         </div>
                                     ))}
                                 </div>
+
+                                {/* Load More Button */}
+                                {sectionVideos[section.title] && sectionVideos[section.title].length > (visibleCounts[section.title] || 4) && (
+                                    <div className="mt-8 flex justify-center">
+                                        <button
+                                            onClick={() => handleLoadMore(section.title)}
+                                            className="px-8 py-3 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all text-sm font-semibold text-gray-300 hover:text-white flex items-center gap-2 group"
+                                        >
+                                            Load More {section.title}
+                                            <RefreshCw className="w-4 h-4 group-hover:rotate-180 transition-transform duration-500" />
+                                        </button>
+                                    </div>
+                                )}
                             </div>
                         ))}
                     </div>

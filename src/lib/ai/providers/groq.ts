@@ -41,6 +41,43 @@ export class GroqProvider implements AIProvider {
         return completion.choices[0]?.message?.content || "";
     }
 
+    async streamText(prompt: string, history?: AIContent[], context?: string): Promise<ReadableStream<string>> {
+        const client = this.getClient();
+        if (!process.env.GROQ_API_KEY) throw new Error("Groq API key missing");
+
+        const messages: { role: 'user' | 'assistant' | 'system'; content: string }[] = history?.map(msg => ({
+            role: msg.role === 'model' ? 'assistant' : 'user',
+            content: msg.parts[0].text || ""
+        })) || [];
+
+        let finalContent = prompt;
+        if (context) {
+            finalContent = `${context}\n\nUser Query: ${prompt}`;
+        }
+
+        messages.push({ role: 'user', content: finalContent });
+
+        const stream = await client.chat.completions.create({
+            messages,
+            model: "llama-3.3-70b-versatile",
+            temperature: 0.7,
+            max_tokens: 2048,
+            stream: true,
+        });
+
+        return new ReadableStream({
+            async start(controller) {
+                for await (const chunk of stream) {
+                    const content = chunk.choices[0]?.delta?.content || "";
+                    if (content) {
+                        controller.enqueue(content);
+                    }
+                }
+                controller.close();
+            }
+        });
+    }
+
     async generateImage(_prompt: string): Promise<string> {
         throw new Error("Groq does not support image generation directly yet.");
     }

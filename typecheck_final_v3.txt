@@ -1,0 +1,9 @@
+
+> xieriee-2.0-flamethrower@0.1.1 typecheck
+> tsc -p tsconfig.json --noEmit
+
+src/hooks/useChatLogic.ts(267,35): error TS2345: Argument of type 'Promise<string>' is not assignable to parameter of type 'string'.
+src/lib/ai/providers/gemini.ts(135,38): error TS2722: Cannot invoke an object which is possibly 'undefined'.
+src/lib/ai/providers/gemini.ts(135,38): error TS18048: 'chunk.text' is possibly 'undefined'.
+src/lib/ai/providers/gemini.ts(135,44): error TS6234: This expression is not callable because it is a 'get' accessor. Did you mean to use it without '()'?
+  Type 'String' has no call signatures.

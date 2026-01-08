@@ -1,0 +1,171 @@
+
+> xieriee-2.0-flamethrower@0.1.1 lint
+> eslint .
+
+
+C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\app\analytics\page.tsx
+   4:10  warning  'useApp' is defined but never used           @typescript-eslint/no-unused-vars
+   6:5   warning  'LineChart' is defined but never used        @typescript-eslint/no-unused-vars
+   6:16  warning  'Line' is defined but never used             @typescript-eslint/no-unused-vars
+   7:26  warning  'PieChart' is defined but never used         @typescript-eslint/no-unused-vars
+   7:36  warning  'Pie' is defined but never used              @typescript-eslint/no-unused-vars
+   7:41  warning  'Legend' is defined but never used           @typescript-eslint/no-unused-vars
+  10:17  warning  'Users' is defined but never used            @typescript-eslint/no-unused-vars
+  10:59  warning  'Video' is defined but never used            @typescript-eslint/no-unused-vars
+  10:66  warning  'Search' is defined but never used           @typescript-eslint/no-unused-vars
+  11:19  warning  'ArrowDownRight' is defined but never used   @typescript-eslint/no-unused-vars
+  13:18  warning  'AnimatePresence' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\app\api\analytics\route.ts
+  5:17  warning  'sql' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\app\api\chat\feedback\route.ts
+   3:10  warning  'db' is defined but never used                @typescript-eslint/no-unused-vars
+   4:15  warning  'updateDoc' is defined but never used         @typescript-eslint/no-unused-vars
+   4:26  warning  'increment' is defined but never used         @typescript-eslint/no-unused-vars
+   4:37  warning  'arrayUnion' is defined but never used        @typescript-eslint/no-unused-vars
+  21:15  warning  'chatRef' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\app\api\generate-image\route.ts
+  24:32  warning  'useFlux' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\app\news\page.tsx
+    6:10  warning  'useSmoothScroll' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         @typescript-eslint/no-unused-vars
+  123:9   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\app\news\page.tsx:123:9
+  121 |
+  122 |     useEffect(() => {
+> 123 |         loadAllVideos();
+      |         ^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  124 |     }, [loadAllVideos]);
+  125 |
+  126 |     const handleRefresh = () => {  react-hooks/set-state-in-effect
+  286:49  warning  'idx' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     @typescript-eslint/no-unused-vars
+
+C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\components\chat\ChatArea.tsx
+   4:57   warning  'Trash2' is defined but never used                   @typescript-eslint/no-unused-vars
+   4:76   warning  'Code' is defined but never used                     @typescript-eslint/no-unused-vars
+   4:91   warning  'ImageIcon' is defined but never used                @typescript-eslint/no-unused-vars
+   4:102  warning  'Search' is defined but never used                   @typescript-eslint/no-unused-vars
+   4:110  warning  'PenSquare' is defined but never used                @typescript-eslint/no-unused-vars
+  11:10   warning  'cn' is defined but never used                       @typescript-eslint/no-unused-vars
+  68:9    warning  'handleTechNews' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  77:9    warning  'clearHistory' is assigned a value but never used    @typescript-eslint/no-unused-vars
+
+C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\components\chat\ChatInput.tsx
+    3:10  warning  'useRef' is defined but never used                                                                                                                                                                                                                                                       @typescript-eslint/no-unused-vars
+  121:41  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\components\chat\ChatMessages.tsx
+  55:8  warning  React Hook useEffect has a missing dependency: 'scrollContainerRef'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\components\chat\EntityCard.tsx
+  4:10  warning  'Avatar' is defined but never used          @typescript-eslint/no-unused-vars
+  4:18  warning  'AvatarFallback' is defined but never used  @typescript-eslint/no-unused-vars
+  4:34  warning  'AvatarImage' is defined but never used     @typescript-eslint/no-unused-vars
+
+C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\components\chat\MessageList.tsx
+  1:23  warning  'useRef' is defined but never used     @typescript-eslint/no-unused-vars
+  4:62  warning  'Check' is defined but never used      @typescript-eslint/no-unused-vars
+  4:69  warning  'RefreshCw' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\components\chat\SmartContextBar.tsx
+  4:10  warning  'Sparkles' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\components\chat\VideoFeed.tsx
+  66:12  warning  'hasError' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\components\sidebar\RightSidebar.tsx
+  145:24  warning  'videoState' is assigned a value but never used                                                                         @typescript-eslint/no-unused-vars
+  267:8   warning  React Hook useEffect has a missing dependency: 'loadMoreTextPrompts'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  284:8   warning  React Hook useEffect has a missing dependency: 'loadMoreAudio'. Either include it or remove the dependency array        react-hooks/exhaustive-deps
+
+C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\components\ui\CodeCanvas.tsx
+   6:24  warning  'Play' is defined but never used                        @typescript-eslint/no-unused-vars
+   7:5   warning  'ChevronLeft' is defined but never used                 @typescript-eslint/no-unused-vars
+  55:7   warning  'getMonacoLanguage' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\components\ui\CodingButton.tsx
+  5:25  warning  'FileJson' is defined but never used   @typescript-eslint/no-unused-vars
+  5:63  warning  'ChevronUp' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\components\ui\ConnectorsModal.tsx
+    7:18  warning  'Mail' is defined but never used                 @typescript-eslint/no-unused-vars
+    7:24  warning  'Calendar' is defined but never used             @typescript-eslint/no-unused-vars
+    7:44  warning  'Database' is defined but never used             @typescript-eslint/no-unused-vars
+   10:10  warning  'toast' is defined but never used                @typescript-eslint/no-unused-vars
+  203:12  warning  'authUrl' is assigned a value but never used     @typescript-eslint/no-unused-vars
+  203:21  warning  'setAuthUrl' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\components\ui\DraggableVideoPlayer.tsx
+  3:25  warning  'useEffect' is defined but never used        @typescript-eslint/no-unused-vars
+  4:35  warning  'AnimatePresence' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\components\ui\LinkedInPreview.tsx
+    4:18  warning  'AnimatePresence' is defined but never used                                                                                                                                                                                                                                              @typescript-eslint/no-unused-vars
+  101:33  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  178:7   warning  'style' is assigned a value but never used                                                                                                                                                                                                                                               @typescript-eslint/no-unused-vars
+
+C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\components\ui\PostConfigModal.tsx
+    5:63  warning  'Layout' is defined but never used                                                                                                                                                                                                                                                       @typescript-eslint/no-unused-vars
+  215:49  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\components\ui\SocialPreview.tsx
+   22:7   warning  'actionVariants' is assigned a value but never used                                                                                                                                                                                                                                      @typescript-eslint/no-unused-vars
+   33:7   warning  'interactionHover' is assigned a value but never used                                                                                                                                                                                                                                    @typescript-eslint/no-unused-vars
+   45:69  warning  'onPublish' is defined but never used                                                                                                                                                                                                                                                    @typescript-eslint/no-unused-vars
+   49:24  warning  'setIsRefining' is assigned a value but never used                                                                                                                                                                                                                                       @typescript-eslint/no-unused-vars
+  123:21  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  175:29  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  214:21  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\components\ui\SpeechToText.tsx
+    4:10  warning  'Mic' is defined but never used                                                                                        @typescript-eslint/no-unused-vars
+    4:15  warning  'MicOff' is defined but never used                                                                                     @typescript-eslint/no-unused-vars
+  158:25  warning  'interimTranscript' is assigned a value but never used                                                                 @typescript-eslint/no-unused-vars
+  231:8   warning  React Hook useCallback has an unnecessary dependency: 'isSupported'. Either exclude it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\context\AppContext.tsx
+  874:9  warning  React Hook React.useMemo has a missing dependency: 'addToFeed'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\context\VideoPlayerContext.tsx
+  3:54  warning  'useRef' is defined but never used     @typescript-eslint/no-unused-vars
+  3:62  warning  'useEffect' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\hooks\useChatLogic.ts
+    3:52   warning  'useMemo' is defined but never used                                                                                                        @typescript-eslint/no-unused-vars
+   11:10   warning  'detectShoppingIntent' is defined but never used                                                                                           @typescript-eslint/no-unused-vars
+   58:209  warning  'isGeneratingVideo' is assigned a value but never used                                                                                     @typescript-eslint/no-unused-vars
+   65:30   warning  'setShowScrollButton' is assigned a value but never used                                                                                   @typescript-eslint/no-unused-vars
+   69:12   warning  'detectedIntent' is assigned a value but never used                                                                                        @typescript-eslint/no-unused-vars
+   69:28   warning  'setDetectedIntent' is assigned a value but never used                                                                                     @typescript-eslint/no-unused-vars
+   86:12   warning  'isGeneratingPost' is assigned a value but never used                                                                                      @typescript-eslint/no-unused-vars
+   89:30   warning  'setLastPostImageUrl' is assigned a value but never used                                                                                   @typescript-eslint/no-unused-vars
+  280:8    warning  React Hook useCallback has missing dependencies: 'scrollToBottom' and 'updateMessage'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  296:22   warning  'e' is defined but never used                                                                                                              @typescript-eslint/no-unused-vars
+  354:18   warning  'e' is defined but never used                                                                                                              @typescript-eslint/no-unused-vars
+
+C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\lib\ai\providers\groq.ts
+  81:25  warning  '_prompt' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\lib\freepik\engine.ts
+  402:27  warning  'elapsed' is assigned a value but never used          @typescript-eslint/no-unused-vars
+  407:27  warning  'elapsed' is assigned a value but never used          @typescript-eslint/no-unused-vars
+  432:21  warning  'processingCount' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\lib\search-formatter.ts
+  57:11  warning  'knowledgeGraph' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\lib\search-handler.ts
+  125:17  warning  Unused eslint-disable directive (no problems were reported from 'no-constant-condition')
+
+✖ 92 problems (1 error, 91 warnings)
+  0 errors and 1 warning potentially fixable with the `--fix` option.
+

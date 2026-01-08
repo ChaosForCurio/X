@@ -1,5 +1,5 @@
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { Sparkles, Trash2, Compass, Music, Video, Type, Image as ImageIcon, Play, Pause, Download } from 'lucide-react';
 import Image from 'next/image';
 import { useApp, type FeedItem } from '@/context/AppContext';
@@ -208,7 +208,7 @@ export default function RightSidebar() {
     };
 
     // Load more text prompts
-    const loadMoreTextPrompts = async () => {
+    const loadMoreTextPrompts = useCallback(async () => {
         if (isLoadingMoreText || !hasMoreText) return;
 
         setIsLoadingMoreText(true);
@@ -224,10 +224,10 @@ export default function RightSidebar() {
         } finally {
             setIsLoadingMoreText(false);
         }
-    };
+    }, [isLoadingMoreText, hasMoreText, textPage]);
 
     // Load more audio
-    const loadMoreAudio = async () => {
+    const loadMoreAudio = useCallback(async () => {
         if (isLoadingMoreAudio || !hasMoreAudio) return;
 
         setIsLoadingMoreAudio(true);
@@ -247,7 +247,7 @@ export default function RightSidebar() {
         } finally {
             setIsLoadingMoreAudio(false);
         }
-    };
+    }, [isLoadingMoreAudio, hasMoreAudio, audioPage]);
 
     // Infinite scroll observer for text feed
     useEffect(() => {
@@ -264,7 +264,7 @@ export default function RightSidebar() {
 
         observer.observe(textScrollRef.current);
         return () => observer.disconnect();
-    }, [activeCategory, hasMoreText, isLoadingMoreText, textPage]);
+    }, [activeCategory, hasMoreText, isLoadingMoreText, textPage, loadMoreTextPrompts]);
 
     // Infinite scroll observer for audio feed
     useEffect(() => {
@@ -281,7 +281,7 @@ export default function RightSidebar() {
 
         observer.observe(audioScrollRef.current);
         return () => observer.disconnect();
-    }, [activeCategory, hasMoreAudio, isLoadingMoreAudio, audioPage]);
+    }, [activeCategory, hasMoreAudio, isLoadingMoreAudio, audioPage, loadMoreAudio]);
 
     const handleTogglePlay = (sound: FreesoundSound) => {
         if (activeAudioId === sound.id) {

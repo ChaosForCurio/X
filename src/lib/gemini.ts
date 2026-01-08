@@ -15,6 +15,11 @@ setGlobalDispatcher(new Agent({
 let ai: GoogleGenAI | null = null;
 
 const getAI = () => {
+  // SECURITY: Ensure API client is only initialized on the server
+  if (typeof window !== 'undefined') {
+    throw new Error("Gemini API client cannot be initialized on the client side.");
+  }
+
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
     throw new Error("GEMINI_API_KEY is not set in environment variables.");

@@ -8,7 +8,7 @@ import React from 'react';
 interface PredictiveOption {
     id: string;
     label: string;
-    icon: any;
+    icon: React.ElementType;
     action: () => void;
     // Removed gradient property as we are going monochrome
 }

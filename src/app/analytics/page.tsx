@@ -1,16 +1,14 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useApp } from '@/context/AppContext';
+
 import {
-    LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-    BarChart, Bar, Cell, PieChart, Pie, Legend
+    BarChart, Bar, Cell, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from 'recharts';
 import {
-    TrendingUp, Users, MessageSquare, Image as ImageIcon, Video, Search,
-    ArrowUpRight, ArrowDownRight, Activity, Zap, Cpu
+    TrendingUp, Activity, Zap, Cpu
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+
 
 const COLORS = ['#8B5CF6', '#3B82F6', '#10B981', '#F59E0B', '#EF4444'];
 

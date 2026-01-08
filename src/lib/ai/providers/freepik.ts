@@ -13,6 +13,11 @@ export class FreepikProvider implements AIProvider {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    async streamText(_prompt: string, _history?: AIContent[], _context?: string, _image?: string, _systemInstruction?: string): Promise<ReadableStream<string>> {
+        throw new Error("Freepik provider does not support text streaming.");
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async analyzeImage(_base64Image: string, _prompt: string): Promise<string> {
         throw new Error("Freepik provider does not support image analysis.");
     }

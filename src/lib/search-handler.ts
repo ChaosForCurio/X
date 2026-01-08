@@ -79,3 +79,78 @@ export async function handleWebSearch(
         throw error; // Re-throw to be handled by the route's error handler
     }
 }
+
+export async function streamWebSearch(
+    query: string,
+    userId: string | null,
+    chatId: string,
+    clientHistory: AIContent[],
+    onFinalAnswer?: (answer: string) => Promise<void>
+): Promise<ReadableStream<string>> {
+    const [results, xResults, fetchedVideoResults] = await Promise.all([
+        performWebSearch(query),
+        performWebSearch(`${query} site:x.com OR site:twitter.com`),
+        performVideoSearch(query, 6)
+    ]);
+
+    if (results.length === 0 && xResults.length === 0) {
+        const noResultsMessage = `I searched for "${query}" but couldn't find any relevant real-time information.`;
+        return new ReadableStream({
+            start(controller) {
+                controller.enqueue(noResultsMessage);
+                controller.close();
+            }
+        });
+    }
+
+    const searchContext = formatSearchResultsForAI(results);
+    const xContext = xResults.length > 0
+        ? `\n\nSOCIAL MEDIA CONTEXT (X/Twitter):\n${xResults.map(r => `- ${r.snippet}`).join('\n')}`
+        : "";
+
+    const followUpPrompt = getSearchSystemInstructions(query, searchContext + xContext);
+    const videoFeed = formatVideoResultsForUser(fetchedVideoResults);
+
+    const aiStream = await aiService.streamText(followUpPrompt, {
+        provider: 'gemini',
+        history: clientHistory
+    });
+
+    let fullAnswer = "";
+
+    return new ReadableStream({
+        async start(controller) {
+            const reader = aiStream.getReader();
+            try {
+                // eslint-disable-next-line no-constant-condition
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+                    if (value) {
+                        fullAnswer += value;
+                        controller.enqueue(value);
+                    }
+                }
+
+                // Append the video feed at the end of the stream
+                if (videoFeed) {
+                    controller.enqueue(videoFeed);
+                    fullAnswer += videoFeed;
+                }
+
+                // Persist the full response
+                if (onFinalAnswer) {
+                    await onFinalAnswer(fullAnswer);
+                } else {
+                    await saveMessage(userId, chatId, 'ai', fullAnswer);
+                }
+
+            } catch (e) {
+                controller.error(e);
+            } finally {
+                reader.releaseLock();
+                controller.close();
+            }
+        }
+    });
+}

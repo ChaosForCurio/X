@@ -82,8 +82,7 @@
 }
 
 body {
-  font-family: "Söhne", "Söhne Breit", "Söhne Mono", sans-serif;
-  scroll-behavior: smooth;
+  /* Font defined in layout.tsx via next/font */
 }
 
 /* Custom Scrollbar for Webkit */
@@ -104,6 +103,41 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: hsl(var(--muted-foreground) / 0.5);
 }
+
+/* Custom Scrollbar Class - Enhanced for Smooth Scroll */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+  margin: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 3px;
+  transition: background 0.2s ease;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Responsive scrollbar for mobile */
+@media (max-width: 768px) {
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+}
+
 
 .dark {
   --background: oklch(0.145 0 0);
@@ -149,52 +183,7 @@ body {
   }
 }
 
-/* Tldraw Dark Theme Customizations */
-.tl-theme__dark {
-  --color-background: #0d0d1a !important;
-  --color-brush-fill: rgba(147, 51, 234, 0.1) !important;
-  --color-brush-stroke: rgba(147, 51, 234, 0.5) !important;
-  --color-selected: rgba(147, 51, 234, 0.8) !important;
-  --color-selected-contrast: #ffffff !important;
-  --color-selection-fill: rgba(147, 51, 234, 0.1) !important;
-  --color-selection-stroke: rgba(147, 51, 234, 0.6) !important;
-}
 
-.tl-container {
-  border-radius: 0 !important;
-}
-
-/* Tldraw toolbar customization */
-.tlui-layout__top__left,
-.tlui-layout__top__center,
-.tlui-layout__top__right,
-.tlui-layout__bottom {
-  background: rgba(26, 26, 46, 0.95) !important;
-  backdrop-filter: blur(12px) !important;
-  border-color: rgba(255, 255, 255, 0.1) !important;
-}
-
-.tlui-toolbar,
-.tlui-menu,
-.tlui-popover__content {
-  background: rgba(26, 26, 46, 0.98) !important;
-  border-color: rgba(255, 255, 255, 0.1) !important;
-}
-
-.tlui-button {
-  color: rgba(255, 255, 255, 0.8) !important;
-}
-
-.tlui-button:hover,
-.tlui-button[data-state="active"] {
-  background: rgba(147, 51, 234, 0.2) !important;
-  color: white !important;
-}
-
-.tlui-button[data-isactive="true"] {
-  background: rgba(147, 51, 234, 0.3) !important;
-  color: white !important;
-}
 
 /* Premium Input Animations */
 @keyframes gradient-xy {
@@ -214,4 +203,17 @@ body {
 .animate-gradient-xy {
   background-size: 200% 200%;
   animation: gradient-xy 3s ease infinite;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
 }

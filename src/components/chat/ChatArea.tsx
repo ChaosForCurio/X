@@ -1,18 +1,25 @@
 'use client';
- 
 
-import { Plus, Download, Maximize, Minimize, SquarePen, Trash2, type LucideIcon } from 'lucide-react';
+
+import { Plus, Download, Maximize, Minimize, SquarePen, ArrowDown, type LucideIcon } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Toggle3D from '../ui/Toggle3D';
 import dynamic from 'next/dynamic';
 import { useChatLogic } from '@/hooks/useChatLogic';
 import ChatInput from './ChatInput';
 import ChatMessages from './ChatMessages';
-import { cn } from '@/lib/utils';
-import { ArrowDown, Code, Image as ImageIcon, Search, PenSquare } from 'lucide-react';
+
+import gsap from 'gsap';
+import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
+import { smoothScrollTo } from '@/hooks/useSmoothScroll';
 
 import SmartContextBar from './SmartContextBar';
 import PredictiveActions from './PredictiveActions';
+
+// Register GSAP plugins
+if (typeof window !== 'undefined') {
+    gsap.registerPlugin(ScrollToPlugin);
+}
 
 // Dynamic imports
 const CodeCanvas = dynamic(() => import('../ui/CodeCanvas'), { ssr: false });
@@ -22,6 +29,8 @@ const SocialPreview = dynamic(() => import('../ui/SocialPreview'), { ssr: false 
 export default function ChatArea() {
 
     // Use the Custom Hook
+    const logic = useChatLogic();
+
     const {
         user,
         inputPrompt, setInputPrompt,
@@ -46,6 +55,8 @@ export default function ChatArea() {
         generatedPostContent,
         lastPostImageUrl,
 
+        isWebSearchEnabled, toggleWebSearch,
+
         messagesEndRef,
         fileInputRef,
         textareaRef,
@@ -54,14 +65,17 @@ export default function ChatArea() {
         handleKeyDown,
         handleFileSelect,
         handleRemoveImage,
-        handleTechNews,
+
         handleCreatePost,
         handleGeneratePost,
         handleOpenCodingCanvas,
+        openCodeCanvas,
+        handleFeedback,
+        handleDownload,
 
         avatarMode,
         clearHistory
-    } = useChatLogic();
+    } = logic;
 
     // Determine last message type for Predictive Actions
     const lastAiMessage = chatHistory.filter(m => m.role === 'ai').pop();
@@ -78,7 +92,7 @@ export default function ChatArea() {
                 handleSend("Can you explain the code you just wrote?");
                 break;
             case 'search_web':
-                setInputPrompt("@web ");
+                toggleWebSearch();
                 textareaRef.current?.focus();
                 break;
             case 'generate_image':
@@ -94,7 +108,7 @@ export default function ChatArea() {
     const tokenCount = chatHistory.reduce((acc, msg) => acc + (msg.content.split(/\s+/).length * 1.3), 0) + (inputPrompt.split(/\s+/).length * 1.3);
 
     return (
-        <div className="flex-1 flex flex-col h-full relative overflow-hidden outline-none bg-[#0a0a0a]">
+        <div className="flex-1 flex flex-col h-full relative outline-none bg-[#0a0a0a] overflow-hidden">
 
             {/* Background Effects */}
             <div className="absolute inset-0 z-0 pointer-events-none">
@@ -187,21 +201,20 @@ export default function ChatArea() {
                 isWebSearchActive={avatarMode === 'searching'}
             />
 
-            {/* Messages Area */}
-            <div className="flex-1 overflow-hidden relative z-10">
+            <div className="flex-1 relative z-10 min-h-0">
                 <ChatMessages
                     chatHistory={chatHistory}
                     user={user}
                     isLoading={isLoading}
                     isGeneratingImage={false}
                     avatarMode={avatarMode}
-                    onDownload={(url) => window.open(url, '_blank')}
-                    onSuggestionClick={(s) => handleSend(s)}
-                    onFillInput={(s) => setInputPrompt(s)}
+                    onDownload={handleDownload}
+                    onSuggestionClick={handleSend}
+                    onFillInput={setInputPrompt}
                     messagesEndRef={messagesEndRef}
-                    onOpenCodeCanvas={(c, t) => { }}
-                    onFeedback={() => { }}
-                    onTrendingClick={(q) => handleSend(q)}
+                    onOpenCodeCanvas={openCodeCanvas}
+                    onFeedback={handleFeedback}
+                    onTrendingClick={handleSend}
                 />
             </div>
 
@@ -229,6 +242,8 @@ export default function ChatArea() {
                     selectedPdf={selectedPdf}
                     handleFileSelect={handleFileSelect}
                     handleRemoveImage={handleRemoveImage}
+                    isWebSearchEnabled={isWebSearchEnabled}
+                    toggleWebSearch={toggleWebSearch}
                     textareaRef={textareaRef}
                     fileInputRef={fileInputRef}
                     handleOpenCodingCanvas={handleOpenCodingCanvas}
@@ -242,18 +257,23 @@ export default function ChatArea() {
             </div>
 
 
-            {/* Scroll to Bottom Button */}
+            {/* Scroll to Bottom Button - Responsive */}
             <AnimatePresence>
                 {showScrollButton && (
                     <motion.button
                         initial={{ opacity: 0, scale: 0.8, y: 10 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.8, y: 10 }}
-                        onClick={() => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })}
-                        className="fixed bottom-32 right-8 p-3 bg-white/10 backdrop-blur border border-white/10 text-white rounded-full shadow-lg z-50 hover:bg-white/20 transition-all hover:scale-110 active:scale-95"
+                        onClick={() => {
+                            const container = document.getElementById('chat-scroll-container');
+                            if (container) {
+                                smoothScrollTo(container, 'max', { duration: 0.8 });
+                            }
+                        }}
+                        className="fixed bottom-24 sm:bottom-28 md:bottom-32 right-4 sm:right-6 md:right-8 p-2.5 sm:p-3 bg-white/10 backdrop-blur border border-white/10 text-white rounded-full shadow-lg z-50 hover:bg-white/20 transition-all hover:scale-110 active:scale-95"
                         aria-label="Scroll to bottom"
                     >
-                        <ArrowDown className="w-5 h-5" />
+                        <ArrowDown className="w-4 h-4 sm:w-5 sm:h-5" />
                     </motion.button>
                 )}
             </AnimatePresence>

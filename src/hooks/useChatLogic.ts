@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { db } from '@/lib/firebase';
 import { collection, addDoc } from 'firebase/firestore';
 import { toast } from 'sonner';
@@ -8,7 +8,7 @@ import { useApp, ChatMessage } from '@/context/AppContext';
 import { useUser } from "@stackframe/stack";
 import { compressImage } from '@/lib/imageUtils';
 import { extractTextFromPDF } from '@/lib/pdf-parser';
-import { detectShoppingIntent } from '@/lib/shoppingAgentTrigger';
+
 import { parseCodeBlocks, ParsedCodeFile } from '@/lib/codeParser';
 import { CodeTemplate } from '../components/ui/CodingButton';
 import { PostConfig } from '../components/ui/PostConfigModal';
@@ -55,7 +55,7 @@ const sanitizeHistory = (history: ChatMessage[]) => {
 };
 
 export const useChatLogic = () => {
-    const { inputPrompt, setInputPrompt, chatHistory, addMessage, toggleLeftSidebar, toggleRightSidebar, isLeftSidebarOpen, isRightSidebarOpen, generateImage, isGeneratingImage, generateVideo, isGeneratingVideo, currentChatId, uploadImage, startNewChat, clearHistory } = useApp();
+    const { inputPrompt, setInputPrompt, chatHistory, addMessage, updateMessage, toggleLeftSidebar, toggleRightSidebar, isLeftSidebarOpen, isRightSidebarOpen, generateImage, isGeneratingImage, generateVideo, currentChatId, uploadImage, startNewChat, clearHistory } = useApp();
     const user = useUser();
 
     // UI State
@@ -88,6 +88,9 @@ export const useChatLogic = () => {
     const [generatedPostContent, setGeneratedPostContent] = useState('');
     const [lastPostImageUrl, setLastPostImageUrl] = useState<string | null>(null);
 
+    // Feature: Web Search State
+    const [isWebSearchEnabled, setIsWebSearchEnabled] = useState(false);
+
     // Refs
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -117,7 +120,8 @@ export const useChatLogic = () => {
     }, []);
 
     const handleTechNews = useCallback(() => {
-        const prompt = "@web What are the latest major tech advancements, AI news, and scientific breakthroughs from the last 24 hours? Provide a comprehensive summary.";
+        setIsWebSearchEnabled(true);
+        const prompt = "What are the latest major tech advancements, AI news, and scientific breakthroughs from the last 24 hours? Provide a comprehensive summary.";
         setInputPrompt(prompt);
         textareaRef.current?.focus();
     }, [setInputPrompt]);
@@ -129,17 +133,20 @@ export const useChatLogic = () => {
 
         if ((!activePrompt && !activeImage) || isLoading) return;
 
-        const prompt = activePrompt;
+        let prompt = activePrompt;
+
+        // Apply Web Search Prefix if toggled on and not already prefixed
+        if (isWebSearchEnabled && !prompt.toLowerCase().includes('@web')) {
+            prompt = `@web ${prompt}`;
+        }
 
         // Clear inputs immediately
-        // Note: For override calls, we might not want to clear main inputs if they weren't used?
-        // But logic assumes if we send, we consume.
         if (overridePrompt === undefined) {
             setInputPrompt('');
             handleRemoveImage();
-        } else {
-            // If manual override, maybe just clear UI if it matches? 
-            // Just sticking to original behavior for now
+            // Don't auto-disable search mode, maybe the user wants it for the whole session?
+            // Usually, specific @web is better per-message, but a toggle is "sticky".
+            // Let's keep it sticky for now as requested by "toggle" UX.
         }
 
         // Always clear UI state just in case (original behavior)
@@ -176,10 +183,7 @@ export const useChatLogic = () => {
 
         let userContent = prompt;
         // Handle Contexts
-        if (selectedPdf) { // Note: using closure state here might be stale if override passed? 
-            // Actually handleSend clears selectedPdf, so this logic relies on the state being set BEFORE send
-            // If overrideFile is passed (e.g. from drop), selectedPdf loop might not trigger.
-            // Simplified logic: trust active logic
+        if (selectedPdf) {
             const pdfUrl = URL.createObjectURL(selectedPdf.file);
             const pdfContext = `\n\n<HIDDEN>[Attached PDF Content: ${selectedPdf.file.name}]\n${selectedPdf.text}\n[End of PDF Content]</HIDDEN>`;
             userContent = (!prompt.trim() ? `[PDF Attachment](${pdfUrl})\nPlease analyze this PDF.` : `[PDF Attachment](${pdfUrl})\n${prompt}`) + pdfContext;
@@ -188,8 +192,7 @@ export const useChatLogic = () => {
             userContent = finalImageUrl.startsWith('data:application/pdf')
                 ? `[PDF Attachment](${finalImageUrl}) \n${prompt} `
                 : `![User Image](${finalImageUrl}) \n${prompt} `;
-            if (!selectedPdf) addMessage('user', finalImageUrl.startsWith('data') ? userContent : prompt); // Logic match original? Original was messy.
-            // Let's stick to: if image, show prompt or image+prompt
+            if (!selectedPdf) addMessage('user', finalImageUrl.startsWith('data') ? userContent : prompt);
             if (!selectedPdf) {
                 if (finalImageUrl.startsWith('data:application/pdf')) addMessage('user', userContent);
                 else addMessage('user', `![User Image](${finalImageUrl}) \n${prompt}`);
@@ -206,41 +209,65 @@ export const useChatLogic = () => {
 
         try {
             const sanitizedHistory = sanitizeHistory(chatHistory);
+
             const res = await fetch('/api/chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    prompt: userContent,
-                    image: finalImageUrl,
-                    messages: sanitizedHistory,
-                    chatId: currentChatId,
-                    imageContext: lastImageContext
-                }),
+                    messages: [...sanitizedHistory, { role: 'user', content: userContent }]
+                })
             });
 
-            const data = await res.json();
-
-            if (data.error) {
-                addMessage('ai', data.response || `❌ Error: ${data.error}`);
+            if (!res.ok) {
+                const errorData = await res.json().catch(() => ({}));
+                addMessage('ai', errorData.error || `❌ Server error: ${res.status}`);
                 return;
             }
 
-            // Handle Backend Actions
-            if (data.backend?.action === 'generate_image') {
-                if (data.memory_update) setLastImageContext(data.memory_update);
-                if (data.explanation) addMessage('ai', data.explanation);
-                const imageUrl = await generateImage(data.backend.prompt, 'default', finalImageUrl || undefined);
-                if (imageUrl) {
-                    addMessage('ai', `![Generated Image](${imageUrl})`);
-                    if (data.memory_update) setLastImageContext({ ...data.memory_update, last_image_url: imageUrl });
+            const contentType = res.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+                const data = await res.json();
+                if (data.error) {
+                    addMessage('ai', data.response || `❌ Error: ${data.error}`);
+                    return;
                 }
-            } else if (data.backend?.action === 'generate_video') {
-                if (data.explanation) addMessage('ai', data.explanation);
-                const videoUrl = await generateVideo(data.backend.prompt);
-                if (videoUrl) addMessage('ai', `Video generated successfully! \n\n[Video](${videoUrl})`);
-            } else if (data.response) {
-                addMessage('ai', data.response);
-                return data.response;
+
+                // Handle Backend Actions
+                if (data.backend?.action === 'generate_image') {
+                    if (data.memory_update) setLastImageContext(data.memory_update);
+                    if (data.explanation) addMessage('ai', data.explanation);
+                    const imageUrl = await generateImage(data.backend.prompt, 'default', finalImageUrl || undefined);
+                    if (imageUrl) {
+                        addMessage('ai', `![Generated Image](${imageUrl})`);
+                        if (data.memory_update) setLastImageContext({ ...data.memory_update, last_image_url: imageUrl });
+                    }
+                } else if (data.backend?.action === 'generate_video') {
+                    if (data.explanation) addMessage('ai', data.explanation);
+                    const videoUrl = await generateVideo(data.backend.prompt);
+                    if (videoUrl) addMessage('ai', `Video generated successfully! \n\n[Video](${videoUrl})`);
+                } else if (data.response) {
+                    addMessage('ai', data.response);
+                    return data.response;
+                }
+            } else {
+                // Streaming response
+                const reader = res.body?.getReader();
+                const decoder = new TextDecoder();
+                if (!reader) return;
+
+                const aiMessageId = addMessage('ai', '');
+                let fullContent = '';
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    const chunk = decoder.decode(value, { stream: true });
+                    fullContent += chunk;
+                    updateMessage(aiMessageId, fullContent);
+                    scrollToBottom();
+                }
+                return fullContent;
             }
         } catch (error) {
             console.error("Chat error:", error);
@@ -248,8 +275,9 @@ export const useChatLogic = () => {
         } finally {
             setIsLoading(false);
             setAvatarMode('default');
+            // Reset sticky behavior? No, let's let the user toggle off.
         }
-    }, [inputPrompt, selectedImage, selectedFile, selectedPdf, isLoading, chatHistory, currentChatId, lastImageContext, uploadImage, generateImage, generateVideo, addMessage, handleRemoveImage, setInputPrompt]);
+    }, [selectedImage, selectedFile, selectedPdf, isLoading, chatHistory, currentChatId, lastImageContext, uploadImage, generateImage, generateVideo, addMessage, handleRemoveImage, setInputPrompt, isWebSearchEnabled]);
 
 
     // File Handlers
@@ -281,8 +309,6 @@ export const useChatLogic = () => {
             // Vision Analysis
             setIsAnalyzing(true);
             setAnalysisPrompt('Analyzing image...');
-            // ... (keep original vision logic basically) ...
-            // Simplified for brevity of reconstruction, but full logic should be:
             const formData = new FormData(); formData.append('file', file);
             const [uploadData, analysisData] = await Promise.all([
                 fetch('/api/upload', { method: 'POST', body: formData }).then(r => r.json()),
@@ -323,8 +349,6 @@ export const useChatLogic = () => {
         toast.info(`Designing post...`);
 
         try {
-            // ... (Logic from original handleGeneratePost) ...
-            // Simplified:
             const prompt = `ACT AS: Social Media Strategist... (Config: ${config.goal}, ${config.tone})...`;
             await handleSend(prompt, null, null);
         } catch (e) {
@@ -340,22 +364,10 @@ export const useChatLogic = () => {
         setCodeCanvasFiles([]);
         setIsCanvasGenerating(true);
 
-        const fullPrompt = template.prompt + (inputPrompt ? `\n\nContext: ${inputPrompt}` : '');
+        const fullPrompt = template.prompt + (inputRef.current ? `\n\nContext: ${inputRef.current}` : '');
         setInputPrompt('');
 
-        // We need to capture the response, so we might need handleSend to return it more explicitly or use a separate ref
-        // For now, assume handleSend adds to history and we might not get direct return easily without refactor.
-        // Or we pass a flag? 
-        // Let's assume standard behavior: user sends prompt, AI replies with code.
-        // CodeCanvas usually expects to Parse the AI response.
-        // The original code did: const responseText = await handleSendRef.current(prompt);
-        // We verified handleSend updates history.
-
-        // Actually, for cleaner separation, handleSend should return the text if awaited.
-        // I added `if (data.response) return data.response` in the handleSend above.
-
         try {
-            // Explicitly cast or validly await, assuming handleSend returns string | void
             const res = await handleSend(fullPrompt);
             if (res && typeof res === 'string') {
                 const files = parseCodeBlocks(res);
@@ -367,7 +379,7 @@ export const useChatLogic = () => {
         } finally {
             setIsCanvasGenerating(false);
         }
-    }, [inputPrompt, handleSend, setInputPrompt]);
+    }, [handleSend, setInputPrompt]);
 
 
     const openCodeCanvas = useCallback((content: string, title?: string) => {
@@ -394,6 +406,10 @@ export const useChatLogic = () => {
         }
     }, [currentChatId]);
 
+    const handleDownload = useCallback((url: string) => {
+        window.open(url, '_blank');
+    }, []);
+
     // Return Interface
     return {
         // State
@@ -401,12 +417,12 @@ export const useChatLogic = () => {
         inputPrompt, setInputPrompt,
         chatHistory,
         isLoading,
-        isGeneratingImage, // Added export
+        isGeneratingImage,
         isAnalyzing, analysisPrompt, setAnalysisPrompt,
 
         selectedImage, selectedPdf,
         isFullscreen, toggleFullscreen: () => setIsFullscreen(!isFullscreen),
-        showScrollButton, // Effect for this needs to remain in view or use window listener here
+        showScrollButton,
 
         // Sidebar State
         isLeftSidebarOpen, toggleLeftSidebar,
@@ -425,6 +441,10 @@ export const useChatLogic = () => {
         generatedPostContent, setGeneratedPostContent,
         lastPostImageUrl,
 
+        // Web Search
+        isWebSearchEnabled,
+        toggleWebSearch: () => setIsWebSearchEnabled(!isWebSearchEnabled),
+
         // Refs
         messagesEndRef,
         fileInputRef,
@@ -432,21 +452,25 @@ export const useChatLogic = () => {
 
         // Handlers
         handleSend,
-        handleKeyDown: (e: React.KeyboardEvent) => {
+        handleKeyDown: useCallback((e: React.KeyboardEvent) => {
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
                 handleSend();
             }
-        },
+        }, [handleSend]),
         handleFileSelect,
         handleRemoveImage,
         handleTechNews,
         handleCreatePost: () => setIsPostConfigModalOpen(true),
         handleGeneratePost,
         handleOpenCodingCanvas,
+        openCodeCanvas,
+        handleFeedback,
+        handleDownload,
 
         // Other
         avatarMode,
         clearHistory
     };
 };
+

@@ -35,6 +35,20 @@ class AIService {
         return provider.generateText(prompt, options?.history, options?.context, options?.image, options?.systemInstruction);
     }
 
+    async streamText(
+        prompt: string,
+        options?: {
+            provider?: AIProviderName;
+            history?: AIContent[];
+            context?: string;
+            image?: string;
+            systemInstruction?: string;
+        }
+    ): Promise<ReadableStream<string>> {
+        const provider = this.getProvider(options?.provider);
+        return provider.streamText(prompt, options?.history, options?.context, options?.image, options?.systemInstruction);
+    }
+
     async generateImage(prompt: string, providerName: AIProviderName = 'freepik'): Promise<string> {
         return this.getProvider(providerName).generateImage(prompt);
     }

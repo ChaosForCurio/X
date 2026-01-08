@@ -10,10 +10,8 @@ export default function SmoothScrolling({ children }: { children: ReactNode }) {
     useEffect(() => {
         // Wait for element to be available
         const scrollContainer = document.getElementById('main-content');
-
-        // Only initialize Lenis if we found the container or want window scroll
-        // In our case, we want to scroll the #main-content div
-        if (!scrollContainer) return;
+        const scrollContent = document.getElementById('main-scroll-content');
+        if (!scrollContainer || !scrollContent) return;
 
         const lenis = new Lenis({
             duration: 1.2,
@@ -23,8 +21,8 @@ export default function SmoothScrolling({ children }: { children: ReactNode }) {
             smoothWheel: true,
             wheelMultiplier: 1,
             touchMultiplier: 2,
-            wrapper: scrollContainer, // Target the specific container
-            content: scrollContainer.firstElementChild as HTMLElement // Content is the direct child
+            wrapper: scrollContainer,
+            content: scrollContent
         });
 
         // Sync Lenis with scroll container

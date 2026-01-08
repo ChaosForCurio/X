@@ -1,0 +1,8 @@
+
+> xieriee-2.0-flamethrower@0.1.1 typecheck
+> tsc -p tsconfig.json --noEmit
+
+src/context/AppContext.tsx(885,30): error TS2322: Type '{ inputPrompt: string; setInputPrompt: React.Dispatch<React.SetStateAction<string>>; chatHistory: ChatMessage[]; setChatHistory: React.Dispatch<React.SetStateAction<ChatMessage[]>>; ... 31 more ...; uploadFile: (file: File) => Promise<string>; }' is not assignable to type 'AppContextType'.
+  The types returned by 'addMessage(...)' are incompatible between these types.
+    Type 'Promise<string>' is not assignable to type 'string'.
+src/lib/ai/providers/gemini.ts(134,63): error TS2339: Property 'stream' does not exist on type 'AsyncGenerator<GenerateContentResponse, any, any>'.

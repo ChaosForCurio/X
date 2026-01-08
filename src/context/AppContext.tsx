@@ -78,7 +78,8 @@ interface AppContextType {
     setInputPrompt: React.Dispatch<React.SetStateAction<string>>;
     chatHistory: ChatMessage[];
     setChatHistory: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
-    addMessage: (role: 'user' | 'ai', content: string) => void;
+    addMessage: (role: 'user' | 'ai', content: string) => Promise<string>;
+    updateMessage: (id: string, content: string) => void;
     isLeftSidebarOpen: boolean;
     toggleLeftSidebar: () => void;
     isRightSidebarOpen: boolean;
@@ -218,7 +219,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
             });
 
             if (!uploadRes2.ok) {
-                const errorData = await uploadRes2.json();
+                const errorData = await uploadRes2.json() as { error?: { message?: string } };
                 throw new Error(errorData.error?.message || 'Cloudinary upload failed');
             }
 
@@ -550,8 +551,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
     const addMessage = async (role: 'user' | 'ai', content: string) => {
         messageIdCounter.current += 1;
+        const msgId = `msg-${messageIdCounter.current}-${Date.now()}`;
         const newMessage: ChatMessage = {
-            id: `msg-${messageIdCounter.current}`,
+            id: msgId,
             role,
             content,
             timestamp: new Date(),
@@ -601,6 +603,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
             toast.error("Failed to sync message with cloud. It might not be saved.");
             // We don't necessarily rollback here to avoid flickering, but we warn the user
         }
+        return msgId;
+    };
+
+    const updateMessage = (id: string, content: string) => {
+        setChatHistory(prev => prev.map(msg =>
+            msg.id === id ? { ...msg, content } : msg
+        ));
     };
 
     const startNewChat = async () => {
@@ -831,6 +840,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         chatHistory,
         setChatHistory,
         addMessage,
+        updateMessage,
         clearHistory,
         isLeftSidebarOpen,
         toggleLeftSidebar,
@@ -865,7 +875,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         inputPrompt, chatHistory, isLeftSidebarOpen, isRightSidebarOpen,
         isConnectorsModalOpen, isUploadModalOpen, connectedApps, userAvatar,
         currentChatId, isGeneratingImage, isGeneratingVideo, savedChats,
-        communityFeed, user, addMessage, clearHistory, generateImage, generateVideo, loadChat,
+        communityFeed, user, addMessage, updateMessage, clearHistory, generateImage, generateVideo, loadChat,
         startNewChat, toggleUploadModal, toggleConnectorsModal, connectApp,
         disconnectApp, deleteChat, renameChat, likeFeedItem, deleteFeedItem,
         uploadFile

@@ -35,13 +35,19 @@ export class GeminiProvider implements AIProvider {
         const modelName = "gemini-1.5-flash"; // More stable model
 
         const attemptGeneration = async (model: string) => {
-            let contents: AIContent[] = [];
+            let contents: { role: string; parts: { text?: string; inlineData?: { mimeType: string; data: string } }[] }[] = [];
             if (history && history.length > 0) {
-                contents = [...history];
+                contents = history.map(h => ({
+                    role: h.role === 'user' ? 'user' : 'model',
+                    parts: h.parts.map(p => ({
+                        text: p.text,
+                        inlineData: p.inlineData
+                    }))
+                }));
             }
 
             const finalPrompt = context ? `${context}\n\nUser Prompt: ${prompt}` : prompt;
-            const userContent: AIContent = { role: 'user', parts: [] };
+            const userContent = { role: 'user', parts: [] as { text?: string; inlineData?: { mimeType: string; data: string } }[] };
 
             if (image) {
                 // Validate image format (should be data:image/...;base64,...)
@@ -81,6 +87,67 @@ export class GeminiProvider implements AIProvider {
             if (err.message?.includes('429') || err.status === 429 || err.status === 503) {
                 console.warn("Gemini rate limited, falling back to pro");
                 return await attemptGeneration("gemini-1.5-pro");
+            }
+            throw error;
+        }
+    }
+
+    async streamText(prompt: string, history?: AIContent[], context?: string, image?: string, systemInstruction?: string): Promise<ReadableStream<string>> {
+        const aiClient = this.getClient();
+        const modelName = "gemini-1.5-flash";
+
+        const attemptStreaming = async (model: string) => {
+            let contents: { role: string; parts: { text?: string; inlineData?: { mimeType: string; data: string } }[] }[] = [];
+            if (history && history.length > 0) {
+                contents = history.map(h => ({
+                    role: h.role === 'user' ? 'user' : 'model',
+                    parts: h.parts.map(p => ({
+                        text: p.text,
+                        inlineData: p.inlineData
+                    }))
+                }));
+            }
+
+            const finalPrompt = context ? `${context}\n\nUser Prompt: ${prompt}` : prompt;
+            const userContent = { role: 'user', parts: [] as { text?: string; inlineData?: { mimeType: string; data: string } }[] };
+
+            if (image) {
+                const base64Data = image.split(',')[1];
+                const mimeTypeMatch = image.match(/^data:(image\/[^;]+);base64,/);
+                const mimeType = mimeTypeMatch ? mimeTypeMatch[1] : 'image/jpeg';
+                userContent.parts.push({ inlineData: { mimeType, data: base64Data } });
+            }
+
+            userContent.parts.push({ text: finalPrompt });
+            contents.push(userContent);
+
+            const config = {
+                model,
+                contents,
+                systemInstruction: systemInstruction || DEFAULT_SYSTEM_INSTRUCTION,
+            };
+
+            const streamingResult = await aiClient.models.generateContentStream(config);
+
+            return new ReadableStream({
+                async start(controller) {
+                    for await (const chunk of streamingResult) {
+                        const text = chunk.text();
+                        if (text) {
+                            controller.enqueue(text);
+                        }
+                    }
+                    controller.close();
+                }
+            });
+        };
+
+        try {
+            return await attemptStreaming(modelName);
+        } catch (error: unknown) {
+            const err = error as { message?: string; status?: number };
+            if (err.message?.includes('429') || err.status === 429 || err.status === 503) {
+                return await attemptStreaming("gemini-1.5-pro");
             }
             throw error;
         }

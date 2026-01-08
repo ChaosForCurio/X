@@ -10,4 +10,4 @@ src/hooks/useChatLogic.ts(245,32): error TS2304: Cannot find name 'res'.
 src/lib/ai/index.ts(16,13): error TS2741: Property 'streamText' is missing in type 'FreepikProvider' but required in type 'AIProvider'.
 src/lib/ai/providers/freepik.ts(3,14): error TS2420: Class 'FreepikProvider' incorrectly implements interface 'AIProvider'.
   Property 'streamText' is missing in type 'FreepikProvider' but required in type 'AIProvider'.
-src/lib/ai/providers/gemini.ts(122,63): error TS2339: Property 'stream' does not exist on type 'AsyncGenerator<GenerateContentResponse, any, any>'.
+src/lib/ai/providers/gemini.ts(134,63): error TS2339: Property 'stream' does not exist on type 'AsyncGenerator<GenerateContentResponse, any, any>'.

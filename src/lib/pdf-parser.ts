@@ -10,7 +10,7 @@ if (typeof window !== 'undefined' && 'Worker' in window) {
 export interface PDFExtractionResult {
     text: string;
     numPages: number;
-    info?: any;
+    info?: Record<string, unknown>;
 }
 
 /**
@@ -36,7 +36,7 @@ export async function extractTextFromPDF(file: File): Promise<PDFExtractionResul
 
             // Extract strings and join them
             const pageText = textContent.items
-                .map((item: any) => item.str)
+                .map((item) => (item as { str: string }).str || '')
                 .join(' ');
 
             fullText += `[Page ${pageNum}]\n${pageText}\n\n`;

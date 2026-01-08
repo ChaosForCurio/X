@@ -23,7 +23,7 @@ export interface GeneratedPost {
 export interface PostGenerationResult {
     posts: GeneratedPost[];
     mediaUrl?: string;
-    researchData?: any;
+    researchData?: unknown;
 }
 
 /**

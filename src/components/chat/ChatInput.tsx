@@ -1,7 +1,7 @@
 'use client';
 
-import { useRef, useEffect } from 'react';
-import { Send, Paperclip, X, FileText, Loader2, UploadCloud } from 'lucide-react';
+import { useRef } from 'react';
+import { Send, Paperclip, X, FileText, Loader2, UploadCloud, Globe } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useDropzone, FileRejection } from 'react-dropzone';
 import { toast } from 'sonner';
@@ -26,6 +26,10 @@ interface ChatInputProps {
     handleFileSelect: (e: React.ChangeEvent<HTMLInputElement>) => void;
     handleRemoveImage: () => void;
 
+    // Web Search
+    isWebSearchEnabled: boolean;
+    toggleWebSearch: () => void;
+
     // Refs
     textareaRef: React.RefObject<HTMLTextAreaElement | null>;
     fileInputRef: React.RefObject<HTMLInputElement | null>;
@@ -38,15 +42,9 @@ export default function ChatInput({
     inputPrompt, setInputPrompt, handleSend, handleKeyDown, isLoading, user,
     isAnalyzing, analysisPrompt, setAnalysisPrompt,
     selectedImage, selectedPdf, handleFileSelect, handleRemoveImage,
+    isWebSearchEnabled, toggleWebSearch,
     textareaRef, fileInputRef, handleOpenCodingCanvas
 }: ChatInputProps) {
-
-    // Dropzone logic needs to be here or passed down? 
-    // Since Dropzone wraps the whole input usually, let's keep it here.
-    // But `useChatLogic` might have handleFileSelect? 
-    // The previous implementation had `onDrop` in ChatArea.
-    // Let's implement onDrop here to keep it self-contained or pass a handler?
-    // We'll reimplement local onDrop calling the passed handlers.
 
     const onDrop = (acceptedFiles: File[], fileRejections: FileRejection[]) => {
         if (fileRejections.length > 0) {
@@ -54,23 +52,6 @@ export default function ChatInput({
             return;
         }
         if (acceptedFiles.length === 0) return;
-
-        // We need to simulate the event for handleFileSelect or call a direct setter logic?
-        // `handleFileSelect` expects a ChangeEvent. 
-        // We might need a direct `onFileDrop` prop if we want to reuse the exact logic from hook 
-        // OR just manually constructing a synthetic event is messy.
-        // Better: Update `useChatLogic` to expose `uploadFile(File)` directly, but for now
-        // let's just trigger the Ref? No, dropzone gives Files.
-        // Let's assume the parent passes a flexible handler or we strictly use the file input.
-
-        // Actually, let's just re-use the fileInputRef to manually trigger? No.
-        // Let's ask the hook to handle a file object.
-        // Since `handleFileSelect` is bound to the input, let's adapt.
-        // For this refactor, I'll temporarily bypass the event object requirement by creating a mock one
-        // OR better, I should have exported `handleFileUpload(File)` from the hook.
-        // I will just mock the event for now to avoid changing the hook interface I just wrote (if I can't edit it).
-        // Wait, I CAN edit the hook. But I just wrote it.
-        // Let's just create a synthetic event.
 
         const file = acceptedFiles[0];
         const dataTransfer = new DataTransfer();
@@ -137,6 +118,7 @@ export default function ChatInput({
                                             </div>
                                         </div>
                                     ) : (
+                                        // eslint-disable-next-line @next/next/no-img-element
                                         <img src={selectedImage!} alt="Preview" className="h-20 w-auto rounded-xl border border-white/20" />
                                     )}
 
@@ -210,6 +192,24 @@ export default function ChatInput({
                             >
                                 <Paperclip size={20} />
                             </button>
+
+                            {/* Web Search Toggle */}
+                            <button
+                                onClick={toggleWebSearch}
+                                disabled={!user}
+                                className={`p-2 rounded-full transition-all duration-300 ${isWebSearchEnabled
+                                    ? 'text-blue-400 bg-blue-500/10 shadow-[0_0_15px_rgba(59,130,246,0.3)]'
+                                    : 'text-white/40 hover:text-blue-400 hover:bg-white/5'}`}
+                                title={isWebSearchEnabled ? "Web Search Enabled" : "Enable Web Search"}
+                            >
+                                <motion.div
+                                    animate={isWebSearchEnabled ? { rotate: 360 } : { rotate: 0 }}
+                                    transition={{ duration: 0.5, ease: "easeInOut" }}
+                                >
+                                    <Globe size={20} />
+                                </motion.div>
+                            </button>
+
                             <SpeechToText
                                 onTranscript={(text) => {
                                     const newPrompt = inputPrompt ? `${inputPrompt} ${text}` : text;
@@ -234,8 +234,8 @@ export default function ChatInput({
 
                         <button
                             onClick={() => handleSend()}
-                            disabled={!user || (!inputPrompt.trim() && !selectedImage && !selectedPdf) || isLoading}
-                            className={`p-3 rounded-2xl transition-all duration-300 shadow-lg ${user && (inputPrompt.trim() || selectedImage || selectedPdf) && !isLoading
+                            disabled={!user || (!inputPrompt.trim() && !selectedImage && !selectedPdf && !isWebSearchEnabled) || isLoading}
+                            className={`p-3 rounded-2xl transition-all duration-300 shadow-lg ${user && (inputPrompt.trim() || selectedImage || selectedPdf || isWebSearchEnabled) && !isLoading
                                 ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white hover:shadow-purple-500/25 hover:scale-105 active:scale-95'
                                 : 'bg-white/5 text-white/20 cursor-not-allowed'
                                 } `}
