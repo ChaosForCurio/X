@@ -1,7 +1,7 @@
-import React, { memo, useRef } from 'react';
+import React, { memo } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Download, FileText, Sparkles, Code2, Copy, Volume2, Check, RefreshCw, ThumbsUp, ThumbsDown } from 'lucide-react';
+import { Download, FileText, Sparkles, Code2, Copy, Volume2, ThumbsUp, ThumbsDown } from 'lucide-react';
 import { toast } from 'sonner';
 import { ChatMessage } from '@/context/AppContext';
 import { hasCodeBlocks } from '@/lib/codeParser';

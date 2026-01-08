@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { fetchChannelVideos, Video } from '@/lib/youtube';
-import { useSmoothScroll, smoothScrollTo } from '@/hooks/useSmoothScroll';
+import { smoothScrollTo } from '@/hooks/useSmoothScroll';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Play, Calendar, User, ArrowLeft, RefreshCw } from 'lucide-react';
 import Image from 'next/image';
@@ -124,7 +124,10 @@ export default function NewsPage() {
     }, []);
 
     useEffect(() => {
-        loadAllVideos();
+        const timer = setTimeout(() => {
+            void loadAllVideos();
+        }, 0);
+        return () => clearTimeout(timer);
     }, [loadAllVideos]);
 
     const handleRefresh = () => {
@@ -287,7 +290,7 @@ export default function NewsPage() {
                         </div>
 
                         {/* Video Lists */}
-                        {SECTIONS.map((section, idx) => (
+                        {SECTIONS.map((section) => (
                             <div key={section.title} id={`section-${section.title}`} className="relative scroll-mt-32">
                                 {/* Section Header */}
                                 <div className="flex items-center gap-4 mb-6">

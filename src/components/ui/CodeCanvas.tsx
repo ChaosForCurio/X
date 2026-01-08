@@ -3,8 +3,8 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-    X, Copy, Download, Play, RefreshCw, Code2, Eye, EyeOff,
-    ChevronLeft, ChevronRight, Maximize2, Minimize2, Check,
+    X, Copy, Download, RefreshCw, Code2, Eye, EyeOff,
+    ChevronRight, Maximize2, Minimize2, Check,
     FileCode, FileJson, FileText, Braces, FileType, Sparkles, Loader2, MessageSquare
 } from 'lucide-react';
 import dynamic from 'next/dynamic';
@@ -52,23 +52,7 @@ const getFileIcon = (language: string) => {
 };
 
 // Get Monaco language from file extension
-const getMonacoLanguage = (filename: string): string => {
-    const ext = filename.split('.').pop()?.toLowerCase() || '';
-    const langMap: Record<string, string> = {
-        'js': 'javascript',
-        'jsx': 'javascript',
-        'ts': 'typescript',
-        'tsx': 'typescript',
-        'html': 'html',
-        'css': 'css',
-        'scss': 'scss',
-        'json': 'json',
-        'md': 'markdown',
-        'py': 'python',
-        'sql': 'sql',
-    };
-    return langMap[ext] || 'plaintext';
-};
+
 
 export default function CodeCanvas({
     isOpen,

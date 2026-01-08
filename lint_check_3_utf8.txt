@@ -1,0 +1,39 @@
+﻿
+> xieriee-2.0-flamethrower@0.1.1 lint
+> eslint .
+
+
+C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\components\ui\LinkedInPreview.tsx
+  101:33  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\components\ui\PostConfigModal.tsx
+  215:49  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\components\ui\SocialPreview.tsx
+  116:21  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  168:29  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  207:21  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\components\ui\SpeechToText.tsx
+  158:25  warning  '_interimTranscript' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\context\AppContext.tsx
+  874:9  warning  React Hook React.useMemo has missing dependencies: 'toggleLeftSidebar' and 'toggleRightSidebar'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\hooks\useChatLogic.ts
+   14:11  warning  'ImageContext' is defined but never used  @typescript-eslint/no-unused-vars
+  288:22  warning  'e' is defined but never used             @typescript-eslint/no-unused-vars
+  346:18  warning  'e' is defined but never used             @typescript-eslint/no-unused-vars
+
+C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\lib\freepik\engine.ts
+  348:13  error    'processingCount' is never reassigned. Use 'const' instead  prefer-const
+  348:13  warning  'processingCount' is assigned a value but never used        @typescript-eslint/no-unused-vars
+  402:27  warning  'elapsed' is assigned a value but never used                @typescript-eslint/no-unused-vars
+  407:27  warning  'elapsed' is assigned a value but never used                @typescript-eslint/no-unused-vars
+
+C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\lib\search-handler.ts
+  125:17  warning  Unused eslint-disable directive (no problems were reported from 'no-constant-condition')
+
+Γ£û 15 problems (1 error, 14 warnings)
+  1 error and 1 warning potentially fixable with the `--fix` option.
+

@@ -4,67 +4,16 @@
 
 
 C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\app\api\chat\feedback\route.ts
-  20:15  warning  'chatRef' is assigned a value but never used  @typescript-eslint/no-unused-vars
-
-C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\app\news\page.tsx
-  127:14  error  Error: Calling setState synchronously within an effect can trigger cascading renders
-
-Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
-* Update external systems with the latest state from React.
-* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
-
-Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
-
-C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\app\news\page.tsx:127:14
-  125 |
-  126 |     useEffect(() => {
-> 127 |         void loadAllVideos();
-      |              ^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
-  128 |     }, [loadAllVideos]);
-  129 |
-  130 |     const handleRefresh = () => {  react-hooks/set-state-in-effect
-
-C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\components\chat\ChatArea.tsx
-  77:9  warning  'clearHistory' is assigned a value but never used  @typescript-eslint/no-unused-vars
-
-C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\components\chat\EntityCard.tsx
-  4:10  warning  'Avatar' is defined but never used          @typescript-eslint/no-unused-vars
-  4:18  warning  'AvatarFallback' is defined but never used  @typescript-eslint/no-unused-vars
-  4:34  warning  'AvatarImage' is defined but never used     @typescript-eslint/no-unused-vars
-
-C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\components\chat\MessageList.tsx
-  1:23  warning  'useRef' is defined but never used     @typescript-eslint/no-unused-vars
-  4:62  warning  'Check' is defined but never used      @typescript-eslint/no-unused-vars
-  4:69  warning  'RefreshCw' is defined but never used  @typescript-eslint/no-unused-vars
-
-C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\components\chat\SmartContextBar.tsx
-  4:10  warning  'Sparkles' is defined but never used  @typescript-eslint/no-unused-vars
+  3:10  warning  'doc' is defined but never used        @typescript-eslint/no-unused-vars
+  4:16  warning  'firestore' is defined but never used  @typescript-eslint/no-unused-vars
 
 C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\components\chat\VideoFeed.tsx
-  66:12  warning  'hasError' is assigned a value but never used  @typescript-eslint/no-unused-vars
-
-C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\components\sidebar\RightSidebar.tsx
-  145:24  warning  'videoState' is assigned a value but never used  @typescript-eslint/no-unused-vars
-
-C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\components\ui\CodeCanvas.tsx
-   6:24  warning  'Play' is defined but never used                        @typescript-eslint/no-unused-vars
-   7:5   warning  'ChevronLeft' is defined but never used                 @typescript-eslint/no-unused-vars
-  55:7   warning  'getMonacoLanguage' is assigned a value but never used  @typescript-eslint/no-unused-vars
-
-C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\components\ui\CodingButton.tsx
-  5:25  warning  'FileJson' is defined but never used   @typescript-eslint/no-unused-vars
-  5:63  warning  'ChevronUp' is defined but never used  @typescript-eslint/no-unused-vars
+  3:17  warning  'useState' is defined but never used  @typescript-eslint/no-unused-vars
 
 C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\components\ui\ConnectorsModal.tsx
-    7:18  warning  'Mail' is defined but never used                 @typescript-eslint/no-unused-vars
-    7:24  warning  'Calendar' is defined but never used             @typescript-eslint/no-unused-vars
-    7:44  warning  'Database' is defined but never used             @typescript-eslint/no-unused-vars
-   10:10  warning  'toast' is defined but never used                @typescript-eslint/no-unused-vars
-  203:12  warning  'authUrl' is assigned a value but never used     @typescript-eslint/no-unused-vars
-  203:21  warning  'setAuthUrl' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  10:10  warning  'toast' is defined but never used  @typescript-eslint/no-unused-vars
 
 C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\components\ui\DraggableVideoPlayer.tsx
-  3:25  warning  'useEffect' is defined but never used        @typescript-eslint/no-unused-vars
   4:35  warning  'AnimatePresence' is defined but never used  @typescript-eslint/no-unused-vars
 
 C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\components\ui\LinkedInPreview.tsx
@@ -91,16 +40,32 @@ C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\components\ui\Speec
   158:25  warning  'interimTranscript' is assigned a value but never used  @typescript-eslint/no-unused-vars
 
 C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\context\AppContext.tsx
-  874:9  warning  React Hook React.useMemo has an unnecessary dependency: 'user'. Either exclude it or remove the dependency array  react-hooks/exhaustive-deps
+  179:11  warning  The 'uploadFile' function makes the dependencies of useMemo Hook (at line 874) change on every render. To fix this, wrap the definition of 'uploadFile' in its own useCallback() Hook                                                               react-hooks/exhaustive-deps
+  270:11  warning  The 'toggleUploadModal' function makes the dependencies of useMemo Hook (at line 874) change on every render. Move it inside the useMemo callback. Alternatively, wrap the definition of 'toggleUploadModal' in its own useCallback() Hook          react-hooks/exhaustive-deps
+  271:11  warning  The 'toggleConnectorsModal' function makes the dependencies of useMemo Hook (at line 874) change on every render. Move it inside the useMemo callback. Alternatively, wrap the definition of 'toggleConnectorsModal' in its own useCallback() Hook  react-hooks/exhaustive-deps
+  294:11  warning  The 'connectApp' function makes the dependencies of useMemo Hook (at line 874) change on every render. Move it inside the useMemo callback. Alternatively, wrap the definition of 'connectApp' in its own useCallback() Hook                        react-hooks/exhaustive-deps
+  321:11  warning  The 'disconnectApp' function makes the dependencies of useMemo Hook (at line 874) change on every render. Move it inside the useMemo callback. Alternatively, wrap the definition of 'disconnectApp' in its own useCallback() Hook                  react-hooks/exhaustive-deps
+  329:11  warning  The 'addToFeed' function makes the dependencies of useMemo Hook (at line 874) change on every render. Move it inside the useMemo callback. Alternatively, wrap the definition of 'addToFeed' in its own useCallback() Hook                          react-hooks/exhaustive-deps
+  413:11  warning  The 'deleteFeedItem' function makes the dependencies of useMemo Hook (at line 874) change on every render. Move it inside the useMemo callback. Alternatively, wrap the definition of 'deleteFeedItem' in its own useCallback() Hook                react-hooks/exhaustive-deps
+  425:11  warning  The 'likeFeedItem' function makes the dependencies of useMemo Hook (at line 874) change on every render. Move it inside the useMemo callback. Alternatively, wrap the definition of 'likeFeedItem' in its own useCallback() Hook                    react-hooks/exhaustive-deps
+  552:11  warning  The 'addMessage' function makes the dependencies of useMemo Hook (at line 874) change on every render. Move it inside the useMemo callback. Alternatively, wrap the definition of 'addMessage' in its own useCallback() Hook                        react-hooks/exhaustive-deps
+  609:11  warning  The 'updateMessage' function makes the dependencies of useMemo Hook (at line 874) change on every render. Move it inside the useMemo callback. Alternatively, wrap the definition of 'updateMessage' in its own useCallback() Hook                  react-hooks/exhaustive-deps
+  615:11  warning  The 'startNewChat' function makes the dependencies of useMemo Hook (at line 874) change on every render. To fix this, wrap the definition of 'startNewChat' in its own useCallback() Hook                                                           react-hooks/exhaustive-deps
+  665:11  warning  The 'loadChat' function makes the dependencies of useMemo Hook (at line 874) change on every render. Move it inside the useMemo callback. Alternatively, wrap the definition of 'loadChat' in its own useCallback() Hook                            react-hooks/exhaustive-deps
+  694:11  warning  The 'deleteChat' function makes the dependencies of useMemo Hook (at line 874) change on every render. Move it inside the useMemo callback. Alternatively, wrap the definition of 'deleteChat' in its own useCallback() Hook                        react-hooks/exhaustive-deps
+  714:11  warning  The 'renameChat' function makes the dependencies of useMemo Hook (at line 874) change on every render. Move it inside the useMemo callback. Alternatively, wrap the definition of 'renameChat' in its own useCallback() Hook                        react-hooks/exhaustive-deps
+  735:11  warning  The 'clearHistory' function makes the dependencies of useMemo Hook (at line 874) change on every render. Move it inside the useMemo callback. Alternatively, wrap the definition of 'clearHistory' in its own useCallback() Hook                    react-hooks/exhaustive-deps
+  770:11  warning  The 'generateImage' function makes the dependencies of useMemo Hook (at line 874) change on every render. Move it inside the useMemo callback. Alternatively, wrap the definition of 'generateImage' in its own useCallback() Hook                  react-hooks/exhaustive-deps
+  806:11  warning  The 'generateVideo' function makes the dependencies of useMemo Hook (at line 874) change on every render. Move it inside the useMemo callback. Alternatively, wrap the definition of 'generateVideo' in its own useCallback() Hook                  react-hooks/exhaustive-deps
 
 C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\context\VideoPlayerContext.tsx
   3:54  warning  'useRef' is defined but never used     @typescript-eslint/no-unused-vars
   3:62  warning  'useEffect' is defined but never used  @typescript-eslint/no-unused-vars
 
 C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\hooks\useChatLogic.ts
-  272:8   warning  React Hook useCallback has unnecessary dependencies: 'currentChatId' and 'lastImageContext'. Either exclude them or remove the dependency array  react-hooks/exhaustive-deps
-  288:22  warning  'e' is defined but never used                                                                                                                    @typescript-eslint/no-unused-vars
-  346:18  warning  'e' is defined but never used                                                                                                                    @typescript-eslint/no-unused-vars
+   65:12  warning  'lastImageContext' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  288:22  warning  'e' is defined but never used                          @typescript-eslint/no-unused-vars
+  346:18  warning  'e' is defined but never used                          @typescript-eslint/no-unused-vars
 
 C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\lib\ai\providers\groq.ts
   81:25  warning  '_prompt' is defined but never used  @typescript-eslint/no-unused-vars
@@ -116,6 +81,6 @@ C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\lib\search-formatte
 C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\lib\search-handler.ts
   125:17  warning  Unused eslint-disable directive (no problems were reported from 'no-constant-condition')
 
-Γ£û 52 problems (1 error, 51 warnings)
+Γ£û 48 problems (0 errors, 48 warnings)
   0 errors and 1 warning potentially fixable with the `--fix` option.
 

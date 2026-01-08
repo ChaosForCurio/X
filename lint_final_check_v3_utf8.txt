@@ -1,0 +1,4 @@
+﻿
+> xieriee-2.0-flamethrower@0.1.1 lint
+> eslint .
+

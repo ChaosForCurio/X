@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Play, Clock, Calendar, ExternalLink } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useVideoPlayer } from '@/context/VideoPlayerContext';
@@ -63,7 +63,6 @@ export const VideoFeed: React.FC<VideoFeedProps> = ({ videosJson, title: propTit
 
 export const VideoCard: React.FC<{ video: Video }> = ({ video }) => {
     const { playVideo } = useVideoPlayer();
-    const [hasError, setHasError] = useState(false);
 
     return (
         <motion.div
@@ -88,7 +87,7 @@ export const VideoCard: React.FC<{ video: Video }> = ({ video }) => {
                             if (video.id && target.src.includes('maxresdefault.jpg')) {
                                 target.src = `https://img.youtube.com/vi/${video.id}/hqdefault.jpg`;
                             } else {
-                                setHasError(true);
+                                console.warn("Thumbnail failed to load");
                             }
                         }}
                     />

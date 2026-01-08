@@ -1,0 +1,74 @@
+﻿
+> xieriee-2.0-flamethrower@0.1.1 lint
+> eslint .
+
+
+C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\app\api\chat\feedback\route.ts
+  3:10  warning  'doc' is defined but never used        @typescript-eslint/no-unused-vars
+  4:16  warning  'firestore' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\components\chat\VideoFeed.tsx
+  3:17  warning  'useState' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\components\ui\ConnectorsModal.tsx
+  10:10  warning  'toast' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\components\ui\DraggableVideoPlayer.tsx
+  4:35  warning  'AnimatePresence' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\components\ui\LinkedInPreview.tsx
+  101:33  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  178:7   warning  'style' is assigned a value but never used                                                                                                                                                                                                                                               @typescript-eslint/no-unused-vars
+
+C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\components\ui\PostConfigModal.tsx
+  215:49  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\components\ui\SocialPreview.tsx
+  116:21  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  168:29  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  207:21  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\components\ui\SpeechToText.tsx
+  158:25  warning  'interimTranscript' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\context\AppContext.tsx
+  179:11  warning  The 'uploadFile' function makes the dependencies of useMemo Hook (at line 874) change on every render. To fix this, wrap the definition of 'uploadFile' in its own useCallback() Hook                                                               react-hooks/exhaustive-deps
+  270:11  warning  The 'toggleUploadModal' function makes the dependencies of useMemo Hook (at line 874) change on every render. Move it inside the useMemo callback. Alternatively, wrap the definition of 'toggleUploadModal' in its own useCallback() Hook          react-hooks/exhaustive-deps
+  271:11  warning  The 'toggleConnectorsModal' function makes the dependencies of useMemo Hook (at line 874) change on every render. Move it inside the useMemo callback. Alternatively, wrap the definition of 'toggleConnectorsModal' in its own useCallback() Hook  react-hooks/exhaustive-deps
+  294:11  warning  The 'connectApp' function makes the dependencies of useMemo Hook (at line 874) change on every render. Move it inside the useMemo callback. Alternatively, wrap the definition of 'connectApp' in its own useCallback() Hook                        react-hooks/exhaustive-deps
+  321:11  warning  The 'disconnectApp' function makes the dependencies of useMemo Hook (at line 874) change on every render. Move it inside the useMemo callback. Alternatively, wrap the definition of 'disconnectApp' in its own useCallback() Hook                  react-hooks/exhaustive-deps
+  329:11  warning  The 'addToFeed' function makes the dependencies of useMemo Hook (at line 874) change on every render. Move it inside the useMemo callback. Alternatively, wrap the definition of 'addToFeed' in its own useCallback() Hook                          react-hooks/exhaustive-deps
+  413:11  warning  The 'deleteFeedItem' function makes the dependencies of useMemo Hook (at line 874) change on every render. Move it inside the useMemo callback. Alternatively, wrap the definition of 'deleteFeedItem' in its own useCallback() Hook                react-hooks/exhaustive-deps
+  425:11  warning  The 'likeFeedItem' function makes the dependencies of useMemo Hook (at line 874) change on every render. Move it inside the useMemo callback. Alternatively, wrap the definition of 'likeFeedItem' in its own useCallback() Hook                    react-hooks/exhaustive-deps
+  552:11  warning  The 'addMessage' function makes the dependencies of useMemo Hook (at line 874) change on every render. Move it inside the useMemo callback. Alternatively, wrap the definition of 'addMessage' in its own useCallback() Hook                        react-hooks/exhaustive-deps
+  609:11  warning  The 'updateMessage' function makes the dependencies of useMemo Hook (at line 874) change on every render. Move it inside the useMemo callback. Alternatively, wrap the definition of 'updateMessage' in its own useCallback() Hook                  react-hooks/exhaustive-deps
+  615:11  warning  The 'startNewChat' function makes the dependencies of useMemo Hook (at line 874) change on every render. To fix this, wrap the definition of 'startNewChat' in its own useCallback() Hook                                                           react-hooks/exhaustive-deps
+  665:11  warning  The 'loadChat' function makes the dependencies of useMemo Hook (at line 874) change on every render. Move it inside the useMemo callback. Alternatively, wrap the definition of 'loadChat' in its own useCallback() Hook                            react-hooks/exhaustive-deps
+  694:11  warning  The 'deleteChat' function makes the dependencies of useMemo Hook (at line 874) change on every render. Move it inside the useMemo callback. Alternatively, wrap the definition of 'deleteChat' in its own useCallback() Hook                        react-hooks/exhaustive-deps
+  714:11  warning  The 'renameChat' function makes the dependencies of useMemo Hook (at line 874) change on every render. Move it inside the useMemo callback. Alternatively, wrap the definition of 'renameChat' in its own useCallback() Hook                        react-hooks/exhaustive-deps
+  735:11  warning  The 'clearHistory' function makes the dependencies of useMemo Hook (at line 874) change on every render. Move it inside the useMemo callback. Alternatively, wrap the definition of 'clearHistory' in its own useCallback() Hook                    react-hooks/exhaustive-deps
+  770:11  warning  The 'generateImage' function makes the dependencies of useMemo Hook (at line 874) change on every render. Move it inside the useMemo callback. Alternatively, wrap the definition of 'generateImage' in its own useCallback() Hook                  react-hooks/exhaustive-deps
+  806:11  warning  The 'generateVideo' function makes the dependencies of useMemo Hook (at line 874) change on every render. Move it inside the useMemo callback. Alternatively, wrap the definition of 'generateVideo' in its own useCallback() Hook                  react-hooks/exhaustive-deps
+
+C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\hooks\useChatLogic.ts
+   65:12  warning  'lastImageContext' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  288:22  warning  'e' is defined but never used                          @typescript-eslint/no-unused-vars
+  346:18  warning  'e' is defined but never used                          @typescript-eslint/no-unused-vars
+
+C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\lib\ai\providers\groq.ts
+  81:25  warning  '_prompt' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\lib\freepik\engine.ts
+  402:27  warning  'elapsed' is assigned a value but never used          @typescript-eslint/no-unused-vars
+  407:27  warning  'elapsed' is assigned a value but never used          @typescript-eslint/no-unused-vars
+  432:21  warning  'processingCount' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\lib\search-formatter.ts
+  57:11  warning  'knowledgeGraph' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\lib\search-handler.ts
+  125:17  warning  Unused eslint-disable directive (no problems were reported from 'no-constant-condition')
+
+Γ£û 38 problems (0 errors, 38 warnings)
+  0 errors and 1 warning potentially fixable with the `--fix` option.
+

@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Sparkles, Send, Check, ChevronRight, ChevronLeft, Layout, User, Image, Video, Globe, Search, Link as LinkIcon, Hash } from 'lucide-react';
+import { X, Sparkles, Send, Check, ChevronRight, ChevronLeft, User, Image, Video, Globe, Search, Link as LinkIcon, Hash } from 'lucide-react';
 
 export interface PostConfig {
     goal: 'trending' | 'scrape' | 'manual';
@@ -212,6 +212,7 @@ export default function PostConfigModal({ isOpen, onClose, onGenerate }: PostCon
                                                         ? 'bg-indigo-500/10 border-indigo-500/40 shadow-xl'
                                                         : 'bg-white/5 border-white/5 hover:bg-white/10'}`}
                                             >
+                                                {/* eslint-disable-next-line @next/next/no-img-element */}
                                                 <img src={platform.icon} alt={platform.label} className={`w-10 h-10 object-contain transition-opacity ${config.platforms.includes(platform.id) ? 'opacity-100' : 'opacity-30'}`} />
                                                 <span className={`text-sm font-bold ${config.platforms.includes(platform.id) ? 'text-white' : 'text-white/30'}`}>{platform.label}</span>
                                                 {config.platforms.includes(platform.id) && (

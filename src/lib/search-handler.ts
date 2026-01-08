@@ -122,7 +122,6 @@ export async function streamWebSearch(
         async start(controller) {
             const reader = aiStream.getReader();
             try {
-                // eslint-disable-next-line no-constant-condition
                 while (true) {
                     const { done, value } = await reader.read();
                     if (done) break;

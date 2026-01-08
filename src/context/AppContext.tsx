@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useRef, useEffect } from 'react';
+import React, { createContext, useContext, useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { db } from '@/lib/firebase';
 import { collection, addDoc, getDocs, query, orderBy, serverTimestamp } from 'firebase/firestore';
 import { useUser } from "@stackframe/stack";
@@ -176,7 +176,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         fetchFeed();
     }, []);
 
-    const uploadFile = async (file: File): Promise<string> => {
+    const uploadFile = useCallback(async (file: File): Promise<string> => {
         try {
             let fileToUpload = file;
 
@@ -251,24 +251,24 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
             toast.error(`Upload failed: ${errorMessage}`);
             throw error;
         }
-    };
+    }, []);
 
-    const toggleLeftSidebar = () => {
+    const toggleLeftSidebar = useCallback(() => {
         setIsLeftSidebarOpen(prev => {
             if (!prev) setIsRightSidebarOpen(false);
             return !prev;
         });
-    };
+    }, []);
 
-    const toggleRightSidebar = () => {
+    const toggleRightSidebar = useCallback(() => {
         setIsRightSidebarOpen(prev => {
             if (!prev) setIsLeftSidebarOpen(false);
             return !prev;
         });
-    };
+    }, []);
 
-    const toggleUploadModal = () => setIsUploadModalOpen(!isUploadModalOpen);
-    const toggleConnectorsModal = () => setIsConnectorsModalOpen(!isConnectorsModalOpen);
+    const toggleUploadModal = useCallback(() => setIsUploadModalOpen(prev => !prev), []);
+    const toggleConnectorsModal = useCallback(() => setIsConnectorsModalOpen(prev => !prev), []);
 
     // Load connected apps from localStorage on mount
     useEffect(() => {
@@ -291,7 +291,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         }
     }, [connectedApps]);
 
-    const connectApp = (connectorId: string) => {
+    const connectApp = useCallback((connectorId: string) => {
         const now = new Date();
         const timeStr = now.toLocaleString('en-US', {
             month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
@@ -316,17 +316,17 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         });
 
         toast.success(`Connected to ${connectorInfo.name}`);
-    };
+    }, []);
 
-    const disconnectApp = (connectorId: string) => {
+    const disconnectApp = useCallback((connectorId: string) => {
         const app = connectedApps.find(a => a.id === connectorId);
         setConnectedApps(prev => prev.filter(a => a.id !== connectorId));
         if (app) {
             toast.success(`Disconnected from ${app.name}`);
         }
-    };
+    }, [connectedApps]);
 
-    const addToFeed = async (item: Omit<FeedItem, 'id' | 'userId' | 'userAvatar' | 'userName' | 'createdAt' | 'likes' | 'likedBy'>, file?: File) => {
+    const addToFeed = useCallback(async (item: Omit<FeedItem, 'id' | 'userId' | 'userAvatar' | 'userName' | 'createdAt' | 'likes' | 'likedBy'>, file?: File) => {
         // Create a temporary ID for optimistic update
         const tempId = String(Date.now());
         const newItem: FeedItem = {
@@ -347,7 +347,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
         const uploadPromise = async () => {
             let mediaUrl = item.image;
-
             if (file) {
                 mediaUrl = await uploadFile(file);
             } else if (item.image.startsWith('data:image')) {
@@ -408,9 +407,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
                 return `Failed to post: ${err.message}`;
             }
         });
-    };
+    }, [user, uploadFile]);
 
-    const deleteFeedItem = async (id: string) => {
+    const deleteFeedItem = useCallback(async (id: string) => {
         // Optimistic update
         setCommunityFeed(prev => prev.filter(item => item.id !== id));
         try {
@@ -420,9 +419,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
             // Revert on failure (would need to re-fetch or keep item in memory to revert properly, 
             // but for now we just log error. In a real app we'd handle rollback better)
         }
-    };
+    }, []);
 
-    const likeFeedItem = async (id: string) => {
+    const likeFeedItem = useCallback(async (id: string) => {
         if (!user) {
             toast.error("Please sign in to like posts");
             return;
@@ -470,7 +469,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
                 return item;
             }));
         }
-    };
+    }, [user, communityFeed]);
 
     const messageIdCounter = useRef(0);
 
@@ -549,7 +548,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user]);
 
-    const addMessage = async (role: 'user' | 'ai', content: string) => {
+    const addMessage = useCallback(async (role: 'user' | 'ai', content: string) => {
         messageIdCounter.current += 1;
         const msgId = `msg-${messageIdCounter.current}-${Date.now()}`;
         const newMessage: ChatMessage = {
@@ -604,19 +603,20 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
             // We don't necessarily rollback here to avoid flickering, but we warn the user
         }
         return msgId;
-    };
+    }, [currentChatId, savedChats]);
 
-    const updateMessage = (id: string, content: string) => {
+    const updateMessage = useCallback((id: string, content: string) => {
         setChatHistory(prev => prev.map(msg =>
             msg.id === id ? { ...msg, content } : msg
         ));
-    };
+    }, []);
 
-    const startNewChat = async () => {
-        if (chatHistory.length > 0) {
+    const startNewChat = useCallback(async () => {
+        const history = chatHistoryRef.current;
+        if (history.length > 0) {
             // Save current chat if it has messages
-            const lastUserMsg = [...chatHistory].reverse().find(msg => msg.role === 'user');
-            const titleText = lastUserMsg ? lastUserMsg.content : chatHistory[0].content;
+            const lastUserMsg = [...history].reverse().find(msg => msg.role === 'user');
+            const titleText = lastUserMsg ? lastUserMsg.content : history[0].content;
             // Use the currentChatId for saving
             const chatId = currentChatId;
 
@@ -624,7 +624,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
                 id: chatId,
                 title: titleText.slice(0, 30) + (titleText.length > 30 ? '...' : ''),
                 date: new Date().toLocaleDateString(),
-                messages: [...chatHistory]
+                messages: [...history]
             };
 
             // Optimistic update: Remove existing if present, then add to top
@@ -660,9 +660,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
             messages: []
         };
         setSavedChats(prev => [newChatSession, ...prev]);
-    };
+    }, [currentChatId]);
 
-    const loadChat = async (id: string) => {
+    const loadChat = useCallback(async (id: string) => {
         try {
             setCurrentChatId(id); // Set the active chat ID
             const res = await fetch(`/api/chats/${id}`);
@@ -689,9 +689,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         } catch (error) {
             console.error("Failed to load chat:", error);
         }
-    };
+    }, [savedChats, startNewChat]);
 
-    const deleteChat = async (id: string) => {
+    const deleteChat = useCallback(async (id: string) => {
         const chatToDelete = savedChats.find(c => c.id === id);
         if (!chatToDelete) return;
 
@@ -709,9 +709,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
                 return [chatToDelete, ...prev];
             });
         }
-    };
+    }, [savedChats]);
 
-    const renameChat = async (id: string, title: string) => {
+    const renameChat = useCallback(async (id: string, title: string) => {
         const oldTitle = savedChats.find(c => c.id === id)?.title;
         setSavedChats(prev => prev.map(c => c.id === id ? { ...c, title } : c));
 
@@ -730,9 +730,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
                 setSavedChats(prev => prev.map(c => c.id === id ? { ...c, title: oldTitle } : c));
             }
         }
-    };
+    }, [savedChats]);
 
-    const clearHistory = async () => {
+    const clearHistory = useCallback(async () => {
         const chatIdToDelete = currentChatId;
         setChatHistory([]);
         const newId = `chat-${Date.now()}`;
@@ -765,9 +765,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
                 });
             }
         }
-    };
+    }, [currentChatId, savedChats]);
 
-    const generateImage = async (prompt: string, model: string = 'flux', image?: string): Promise<string | null> => {
+    const generateImage = useCallback(async (prompt: string, model: string = 'flux', image?: string): Promise<string | null> => {
         setIsGeneratingImage(true);
         try {
             const res = await fetch('/api/generate-image', {
@@ -801,9 +801,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         } finally {
             setIsGeneratingImage(false);
         }
-    };
+    }, [user]);
 
-    const generateVideo = async (prompt: string, model: string = 'google-veo', options?: Record<string, unknown>): Promise<string | null> => {
+    const generateVideo = useCallback(async (prompt: string, model: string = 'google-veo', options?: Record<string, unknown>): Promise<string | null> => {
         setIsGeneratingVideo(true);
         try {
             const res = await fetch('/api/generate-video', {
@@ -831,7 +831,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         } finally {
             setIsGeneratingVideo(false);
         }
-    };
+    }, []);
 
 
     const contextValue = React.useMemo(() => ({
@@ -875,10 +875,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         inputPrompt, chatHistory, isLeftSidebarOpen, isRightSidebarOpen,
         isConnectorsModalOpen, isUploadModalOpen, connectedApps, userAvatar,
         currentChatId, isGeneratingImage, isGeneratingVideo, savedChats,
-        communityFeed, user, addMessage, updateMessage, clearHistory, generateImage, generateVideo, loadChat,
+        communityFeed, addMessage, updateMessage, clearHistory, generateImage, generateVideo, loadChat,
         startNewChat, toggleUploadModal, toggleConnectorsModal, connectApp,
         disconnectApp, deleteChat, renameChat, likeFeedItem, deleteFeedItem,
-        uploadFile
+        uploadFile, addToFeed, toggleLeftSidebar, toggleRightSidebar
     ]);
 
     return (

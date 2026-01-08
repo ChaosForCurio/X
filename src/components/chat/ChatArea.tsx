@@ -1,4 +1,5 @@
 'use client';
+import { useEffect } from 'react';
 
 
 import { Plus, Download, Maximize, Minimize, SquarePen, ArrowDown, type LucideIcon } from 'lucide-react';
@@ -40,6 +41,7 @@ export default function ChatArea() {
         selectedImage, selectedPdf,
         isFullscreen, toggleFullscreen,
         showScrollButton,
+        setShowScrollButton,
 
         isLeftSidebarOpen, toggleLeftSidebar,
         isRightSidebarOpen, toggleRightSidebar,
@@ -73,9 +75,25 @@ export default function ChatArea() {
         handleFeedback,
         handleDownload,
 
-        avatarMode,
-        clearHistory
+        avatarMode
     } = logic;
+
+    // Handle Scroll for "Scroll to bottom" button
+    useEffect(() => {
+        const container = document.getElementById('chat-scroll-container');
+        if (!container) return;
+
+        const handleScroll = () => {
+            const isAtBottom = container.scrollHeight - container.scrollTop <= container.clientHeight + 100;
+            setShowScrollButton(!isAtBottom);
+        };
+
+        container.addEventListener('scroll', handleScroll);
+        // Initial check
+        handleScroll();
+
+        return () => container.removeEventListener('scroll', handleScroll);
+    }, [setShowScrollButton, chatHistory]);
 
     // Determine last message type for Predictive Actions
     const lastAiMessage = chatHistory.filter(m => m.role === 'ai').pop();

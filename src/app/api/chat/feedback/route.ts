@@ -1,8 +1,5 @@
 import { NextResponse } from "next/server";
 import { stackServerApp } from "@/stack";
-import { db } from "@/db"; // Assuming drizzle or similar, but from previous logs it seems firestore is used for chats
-import { doc, updateDoc, increment, arrayUnion } from "firebase/firestore";
-import { db as firestore } from "@/lib/firebase";
 
 export async function POST(req: Request) {
     try {
@@ -18,7 +15,7 @@ export async function POST(req: Request) {
         }
 
         // According to AppContext.tsx, chats are stored in firestore under "chats" collection
-        const chatRef = doc(firestore, "chats", chatId);
+        // const chatRef = doc(firestore, "chats", chatId);
 
         // This is a simplified implementation. Real-world might store detailed feedback in a separate collection.
         // For now, let's just log it or update a simple count if the schema allows.

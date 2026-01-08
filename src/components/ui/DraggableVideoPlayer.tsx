@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useRef, useEffect } from 'react';
-import { motion, useDragControls, AnimatePresence } from 'framer-motion';
+import React, { useRef } from 'react';
+import { motion, useDragControls } from 'framer-motion';
 import { X, Minus, Maximize2, Move } from 'lucide-react';
 import { useVideoPlayer } from '@/context/VideoPlayerContext';
 

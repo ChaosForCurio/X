@@ -6,8 +6,9 @@ import {
     BarChart, Bar, Cell, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from 'recharts';
 import {
-    TrendingUp, Activity, Zap, Cpu
+    TrendingUp, Activity, Zap, Cpu, ArrowUpRight
 } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 
 const COLORS = ['#8B5CF6', '#3B82F6', '#10B981', '#F59E0B', '#EF4444'];

@@ -52,7 +52,7 @@ const ChatMessages = memo(({
                 });
             }
         }
-    }, [chatHistory, messagesEndRef]);
+    }, [chatHistory, messagesEndRef, scrollContainerRef]);
 
     if (chatHistory.length === 0) {
         return (

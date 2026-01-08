@@ -4,10 +4,10 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     X, Search, Check, ExternalLink, Unplug, Zap, ShieldCheck, RefreshCw,
-    Cloud, Code, Mail, Calendar, FileText, Database, MessageSquare, Folder, Sparkles
+    Cloud, Code, FileText, MessageSquare, Folder, Sparkles
 } from 'lucide-react';
 import Image from 'next/image';
-import { toast } from 'sonner';
+
 
 // Connector types and data
 export interface Connector {
@@ -200,7 +200,7 @@ export default function ConnectorsModal({
     const [searchQuery, setSearchQuery] = useState('');
     const [activeCategory, setActiveCategory] = useState<string | 'all'>('all');
     const [connectingId, setConnectingId] = useState<string | null>(null);
-    const [authUrl, setAuthUrl] = useState<string | null>(null);
+
 
     useEffect(() => {
         // Handle standard OAuth callbacks here if needed

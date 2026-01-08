@@ -345,7 +345,6 @@ export class FreepikEngine {
         const maxAttempts = type === 'image' ? 60 : 90; // Images: 2 min, Videos: 3 min
         const maxCreatedAttempts = 15; // Max 30 seconds in CREATED state before considering it stuck
         let createdCount = 0;
-        let processingCount = 0;
         let endpointUrl = '';
 
         if (type === 'image') {
@@ -399,12 +398,9 @@ export class FreepikEngine {
 
                 // Log progress every 5 attempts or when status changes
                 if (i % 5 === 0 || status !== 'CREATED') {
-                    const elapsed = Math.round((i * 2) / 60 * 10) / 10;
-
                 }
 
                 if (status === 'COMPLETED') {
-                    const elapsed = Math.round((i * 2) / 60 * 10) / 10;
                     // Generation completed
                     return data;
                 }
@@ -429,7 +425,7 @@ export class FreepikEngine {
 
                 // Track PROCESSING state
                 if (status === 'PROCESSING') {
-                    processingCount++;
+
                     if (i % 5 === 0) {
 
                     }

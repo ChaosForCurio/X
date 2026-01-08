@@ -78,6 +78,7 @@ export class GroqProvider implements AIProvider {
         });
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async generateImage(_prompt: string): Promise<string> {
         throw new Error("Groq does not support image generation directly yet.");
     }

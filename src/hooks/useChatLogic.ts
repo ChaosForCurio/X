@@ -1,9 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { db } from '@/lib/firebase';
-import { collection, addDoc } from 'firebase/firestore';
-import { toast } from 'sonner';
+
 import { useApp, ChatMessage } from '@/context/AppContext';
 import { useUser } from "@stackframe/stack";
 import { compressImage } from '@/lib/imageUtils';
@@ -13,17 +11,6 @@ import { parseCodeBlocks, ParsedCodeFile } from '@/lib/codeParser';
 import { CodeTemplate } from '../components/ui/CodingButton';
 import { PostConfig } from '../components/ui/PostConfigModal';
 
-interface ImageContext {
-    response?: string;
-    prompt?: string;
-    last_image_url?: string;
-    extracted_text?: string;
-    analysis?: {
-        objects: string[];
-        colors: string[];
-        mood: string;
-    };
-}
 
 // Helper to check if a prompt likely triggers a web search (matching backend logic)
 const isSearchPrompt = (text: string) => {
@@ -62,11 +49,9 @@ export const useChatLogic = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [avatarMode, setAvatarMode] = useState<'default' | 'searching' | 'creative'>('default');
     const [isFullscreen, setIsFullscreen] = useState(false);
-    const [showScrollButton, setShowScrollButton] = useState(false);
 
     // Analysis & Context State
-    const [lastImageContext, setLastImageContext] = useState<ImageContext | null>(null);
-    const [detectedIntent, setDetectedIntent] = useState<string | null>(null);
+
     const [isAnalyzing, setIsAnalyzing] = useState(false);
     const [analysisPrompt, setAnalysisPrompt] = useState('');
 
@@ -83,7 +68,6 @@ export const useChatLogic = () => {
 
     // Feature: Post Generation State
     const [isPostConfigModalOpen, setIsPostConfigModalOpen] = useState(false);
-    const [isGeneratingPost, setIsGeneratingPost] = useState(false);
     const [isSocialPreviewOpen, setIsSocialPreviewOpen] = useState(false);
     const [generatedPostContent, setGeneratedPostContent] = useState('');
     const [lastPostImageUrl, setLastPostImageUrl] = useState<string | null>(null);
@@ -91,10 +75,13 @@ export const useChatLogic = () => {
     // Feature: Web Search State
     const [isWebSearchEnabled, setIsWebSearchEnabled] = useState(false);
 
+    // Visibility: Scroll to bottom
+    const [showScrollButton, setShowScrollButton] = useState(false);
+
     // Refs
-    const messagesEndRef = useRef<HTMLDivElement>(null);
-    const fileInputRef = useRef<HTMLInputElement>(null);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const messagesEndRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef(inputPrompt);
 
     // Sync input ref
@@ -277,11 +264,11 @@ export const useChatLogic = () => {
             setAvatarMode('default');
             // Reset sticky behavior? No, let's let the user toggle off.
         }
-    }, [selectedImage, selectedFile, selectedPdf, isLoading, chatHistory, currentChatId, lastImageContext, uploadImage, generateImage, generateVideo, addMessage, handleRemoveImage, setInputPrompt, isWebSearchEnabled]);
+    }, [selectedImage, selectedFile, selectedPdf, isLoading, chatHistory, uploadImage, generateImage, generateVideo, addMessage, handleRemoveImage, setInputPrompt, isWebSearchEnabled, updateMessage, scrollToBottom]);
 
 
     // File Handlers
-    const handleFileSelect = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFileSelect = useCallback(async () => {
         const file = e.target.files?.[0];
         if (!file) return;
 
@@ -293,7 +280,7 @@ export const useChatLogic = () => {
                 const text = result.text.length > 50000 ? result.text.substring(0, 50000) + "..." : result.text;
                 setSelectedPdf({ file, text, name: file.name });
                 toast.success('PDF ready', { id: loadingToast });
-            } catch (e) { toast.error('PDF error', { id: loadingToast }); }
+            } catch { toast.error('PDF error', { id: loadingToast }); }
             return;
         }
 
@@ -351,7 +338,7 @@ export const useChatLogic = () => {
         try {
             const prompt = `ACT AS: Social Media Strategist... (Config: ${config.goal}, ${config.tone})...`;
             await handleSend(prompt, null, null);
-        } catch (e) {
+        } catch {
             toast.error('Failed to generate post');
         } finally {
             setIsGeneratingPost(false);
@@ -422,7 +409,7 @@ export const useChatLogic = () => {
 
         selectedImage, selectedPdf,
         isFullscreen, toggleFullscreen: () => setIsFullscreen(!isFullscreen),
-        showScrollButton,
+        showScrollButton, setShowScrollButton,
 
         // Sidebar State
         isLeftSidebarOpen, toggleLeftSidebar,
@@ -439,7 +426,7 @@ export const useChatLogic = () => {
         isPostConfigModalOpen, setIsPostConfigModalOpen,
         isSocialPreviewOpen, setIsSocialPreviewOpen,
         generatedPostContent, setGeneratedPostContent,
-        lastPostImageUrl,
+        lastPostImageUrl, setLastPostImageUrl,
 
         // Web Search
         isWebSearchEnabled,

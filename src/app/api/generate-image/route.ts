@@ -21,7 +21,7 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 });
         }
 
-        const { prompt, image, useFlux } = await request.json();
+        const { prompt, image } = await request.json();
 
         if (!prompt) {
             return NextResponse.json({ error: 'Prompt is required' }, { status: 400 });

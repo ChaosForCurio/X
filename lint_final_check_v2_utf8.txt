@@ -1,0 +1,10 @@
+﻿
+> xieriee-2.0-flamethrower@0.1.1 lint
+> eslint .
+
+
+C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\context\AppContext.tsx
+  882:10  error  Parsing error: ')' expected
+
+Γ£û 1 problem (1 error, 0 warnings)
+

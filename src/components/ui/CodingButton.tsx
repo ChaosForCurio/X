@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Code2, Layout, FileJson, Boxes, AppWindow, Terminal, ChevronUp } from 'lucide-react';
+import { Code2, Layout, Boxes, AppWindow, Terminal } from 'lucide-react';
 
 export interface CodeTemplate {
     id: string;

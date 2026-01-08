@@ -1,7 +1,7 @@
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Code2, PenTool, Globe } from 'lucide-react';
+import { Code2, PenTool, Globe } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import React from 'react';
 

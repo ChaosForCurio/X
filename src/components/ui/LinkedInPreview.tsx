@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { X, Heart, MessageSquare, Repeat2, Send, Globe, MoreHorizontal, ThumbsUp, Share2, AlertCircle, RefreshCw } from 'lucide-react';
 
 interface LinkedInPreviewProps {
@@ -98,6 +98,7 @@ export default function LinkedInPreview({ content, imageUrl, onClose, onPublish,
                                 variants={contentVariants}
                                 className="relative mt-2 border-y border-gray-100 bg-gray-50 aspect-video flex items-center justify-center overflow-hidden"
                             >
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
                                 <img
                                     src={imageUrl}
                                     alt="Post Visual"
@@ -175,13 +176,5 @@ export default function LinkedInPreview({ content, imageUrl, onClose, onPublish,
 }
 
 // Add simple animation styles (can be placed in a global CSS or separate file)
-const style = `
-@keyframes spin-slow {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-.animate-spin-slow {
-  animation: spin-slow 8s linear infinite;
-}
-`;
+
 

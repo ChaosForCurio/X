@@ -1,6 +1,5 @@
 'use client';
 
-import { useRef } from 'react';
 import { Send, Paperclip, X, FileText, Loader2, UploadCloud, Globe } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useDropzone, FileRejection } from 'react-dropzone';

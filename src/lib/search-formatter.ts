@@ -54,7 +54,6 @@ export function formatSearchResultsForUser(query: string, results: WebSearchResu
     let markdown = `# 🌐 Web Search: ${query}\n\n`;
 
     // Separate Knowledge Graph from Organic Results
-    const knowledgeGraph = results.find(r => r.type === 'knowledge_graph');
     const organicResults = results.filter(r => r.type !== 'knowledge_graph'); // Keep all organic
 
     // --- RENDER ENTITY CARD FOR PEOPLE/PLACES ---

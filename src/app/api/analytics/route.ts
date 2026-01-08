@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { db } from '@/db';
 import { chats, messages, userImages } from '@/db/schema';
 import { stackServerApp } from '@/stack';
-import { count, sql } from 'drizzle-orm';
+import { count } from 'drizzle-orm';
 
 export async function GET() {
     try {

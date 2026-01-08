@@ -142,7 +142,7 @@ const FeedItem = ({
 
 export default function RightSidebar() {
     const { setInputPrompt, toggleRightSidebar, communityFeed, deleteFeedItem, likeFeedItem } = useApp();
-    const { playVideo, videoState } = useVideoPlayer();
+    const { playVideo } = useVideoPlayer();
     const user = useUser();
     const containerRef = useRef<HTMLDivElement>(null);
     const [isExploreOpen, setIsExploreOpen] = useState(false);

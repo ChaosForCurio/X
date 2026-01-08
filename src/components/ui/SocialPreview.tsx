@@ -19,10 +19,7 @@ interface SocialPreviewProps {
 
 type Platform = 'linkedin' | 'x' | 'instagram';
 
-const actionVariants = {
-    hover: { scale: 1.05, backgroundColor: 'rgba(255, 255, 255, 0.1)' },
-    tap: { scale: 0.95 }
-};
+
 
 const platformVariants = {
     initial: { opacity: 0, x: 20 },
@@ -30,11 +27,7 @@ const platformVariants = {
     exit: { opacity: 0, x: -20 }
 };
 
-const interactionHover = {
-    scale: 1.1,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    transition: { type: 'spring', stiffness: 400, damping: 10 }
-};
+
 
 const premiumButton = {
     rest: { scale: 1 },
@@ -42,11 +35,11 @@ const premiumButton = {
     tap: { scale: 0.98 }
 };
 
-export default function SocialPreview({ content, imageUrl, onClose, onPublish, intent }: SocialPreviewProps) {
+export default function SocialPreview({ content, imageUrl, onClose, intent }: SocialPreviewProps) {
     const [platform, setPlatform] = useState<Platform>('linkedin');
     const [isEditing, setIsEditing] = useState(false);
     const [editedContent, setEditedContent] = useState(content);
-    const [isRefining, setIsRefining] = useState(false);
+
 
     useEffect(() => {
         setEditedContent(content);
@@ -120,6 +113,7 @@ export default function SocialPreview({ content, imageUrl, onClose, onPublish, i
 
             {imageUrl && (
                 <div className="relative aspect-video bg-gray-100 overflow-hidden">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={imageUrl} alt="Social" className="w-full h-full object-cover" />
                 </div>
             )}
@@ -172,6 +166,7 @@ export default function SocialPreview({ content, imageUrl, onClose, onPublish, i
                     </div>
                     {imageUrl && (
                         <div className="mt-3 rounded-2xl overflow-hidden border border-white/10 relative">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img src={imageUrl} alt="Tweet" className="w-full object-cover max-h-[400px]" />
                         </div>
                     )}
@@ -211,6 +206,7 @@ export default function SocialPreview({ content, imageUrl, onClose, onPublish, i
 
             {imageUrl ? (
                 <div className="aspect-square bg-gray-50">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={imageUrl} alt="Insta" className="w-full h-full object-cover" />
                 </div>
             ) : (
@@ -334,7 +330,7 @@ export default function SocialPreview({ content, imageUrl, onClose, onPublish, i
                             onClick={onClose}
                             className="w-full py-4 px-6 border border-white/10 text-white/60 font-bold rounded-2xl hover:bg-white/5 hover:text-white transition-all flex items-center justify-center gap-2"
                         >
-                            <RefreshCw className={`w-5 h-5 ${isRefining ? 'animate-spin' : ''}`} />
+                            <RefreshCw className="w-5 h-5" />
                             Refine AI Logic
                         </motion.button>
                         <motion.button

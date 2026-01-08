@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { Mic, MicOff, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import StarfishMicrophone from './StarfishMicrophone';
@@ -148,14 +148,11 @@ export default function SpeechToText({ onTranscript, disabled = false, continuou
 
             recognition.onresult = (event: SpeechRecognitionEvent) => {
                 let finalTranscript = '';
-                let interimTranscript = '';
 
                 for (let i = event.resultIndex; i < event.results.length; i++) {
                     const transcript = event.results[i][0].transcript;
                     if (event.results[i].isFinal) {
                         finalTranscript += transcript;
-                    } else {
-                        interimTranscript += transcript;
                     }
                 }
 

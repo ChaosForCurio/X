@@ -1,0 +1,14 @@
+﻿
+> xieriee-2.0-flamethrower@0.1.1 lint
+> eslint .
+
+
+C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\context\AppContext.tsx
+  874:4  error  Parsing error: Property assignment expected
+
+C:\Users\Lenovo\OneDrive\Desktop\Xieriee 2.0\Xieriee-1.0\src\hooks\useChatLogic.ts
+  277:22  warning  '_e' is defined but never used  @typescript-eslint/no-unused-vars
+  335:18  warning  '_e' is defined but never used  @typescript-eslint/no-unused-vars
+
+Γ£û 3 problems (1 error, 2 warnings)
+
